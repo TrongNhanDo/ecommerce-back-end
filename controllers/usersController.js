@@ -1,5 +1,4 @@
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcrypt");
 const User = require("../models/User");
 
 // @desc get all users
@@ -15,6 +14,25 @@ const getAllUser = asyncHandler(async (req, res) => {
    } catch (error) {
       console.log(error);
       return res.status(400).json({ message: "Get users list fail" });
+   }
+});
+
+// login
+const loginUser = asyncHandler(async (req, res) => {
+   try {
+      const { username, password } = req.body;
+      if (!username || !password) {
+         return res.status(400).json({ message: "Username and password are required" });
+      }
+      const user = await User.findOne({ username, password }).select("-password").exec();
+      if (!user) {
+         return res.status(401).json({ message: "Username or password incorrect" });
+      } else {
+         return res.status(200).json(user);
+      }
+   } catch (error) {
+      console.log(error);
+      return res.status(400).json({ message: "Server's error" });
    }
 });
 
@@ -37,10 +55,9 @@ const createUser = asyncHandler(async (req, res) => {
             .json({ message: `Username already existed` });
       }
       // hash password
-      const hashedPwd = await bcrypt.hash(password, 10);
       const userObject = {
          username,
-         password: hashedPwd,
+         password,
          roles,
       };
       // create and store new user
@@ -86,7 +103,7 @@ const updateUser = asyncHandler(async (req, res) => {
          },
          {
             username: username || user.username,
-            password: password ? await bcrypt.hash(password, 10) : user.password,
+            password: password || user.password,
             roles: roles || user.roles,
             active: active || user.active,
             updatedAt: new Date(),
@@ -150,4 +167,5 @@ module.exports = {
    updateUser,
    deleteUser,
    getUserById,
+   loginUser,
 };

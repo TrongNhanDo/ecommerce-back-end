@@ -39,7 +39,6 @@
       "radix": "off",
       "consistent-return": "warn",
       "react-hooks/exhaustive-deps": "error",
-      "no-undef": "warn",
       "comma-spacing": [
          "warn",
          {
