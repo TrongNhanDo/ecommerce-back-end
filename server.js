@@ -23,10 +23,9 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-// app.use("/", express.static(path.join(__dirname, "public")));
+app.use("/", express.static(path.join(__dirname, "public")));
 
-// app.use("/", require("./route/root"));
-app.use('/', (req, res) => res.send('hello bae'));
+app.use("/", require("./route/root"));
 // route for users
 app.use("/users", require("./route/userRoutes"));
 // route for ages
