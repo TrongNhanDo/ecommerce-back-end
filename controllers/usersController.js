@@ -44,7 +44,7 @@ const createUser = asyncHandler(async (req, res) => {
       // get params from request's body
       const { username, password, roles } = req.body;
       // confirm data
-      if (!username || !password || !Array.isArray(roles) || !roles.length) {
+      if (!username || !password) {
          return res.status(404).json({ message: "All fields are required" });
       }
       // check for duplicate
