@@ -6,17 +6,8 @@
    "scripts": {
       "start": "node server.js",
       "server": "nodemon server.js",
-      "client": "cd client && npm run start",
-      "server-install": "npm install",
-      "client-install": "cd client && npm install",
-      "install-all": "concurrently \"npm run server-install\" \"npm run client-install\"",
-      "dev": "concurrently \"npm run server\" \"npm run client\"",
       "lint-server": "eslint . --ext .js,.jsx,.ts,.tsx",
-      "lint-client": "cd client && eslint . --ext .js,.jsx,.ts,.tsx",
-      "lint:fix-server": "eslint --fix .  --ext .js,.jsx,.ts,.tsx",
-      "lint:fix-client": "cd client && eslint --fix .  --ext .js,.jsx,.ts,.tsx",
-      "lint-all": "concurrently \"npm run lint-server\" \"npm run lint-client\"",
-      "lint:fix-all": "concurrently \"npm run lint:fix-server\" \"npm run lint:fix-client\"",
+      "lint:fix": "eslint --fix .  --ext .js,.jsx,.ts,.tsx",
       "format-all": "prettier --write \"./**/*.{js,jsx,ts,tsx,json}\""
    },
    "keywords": [],

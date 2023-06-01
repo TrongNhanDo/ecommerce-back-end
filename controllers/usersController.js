@@ -22,11 +22,17 @@ const loginUser = asyncHandler(async (req, res) => {
    try {
       const { username, password } = req.body;
       if (!username || !password) {
-         return res.status(400).json({ message: "Username and password are required" });
+         return res
+            .status(400)
+            .json({ message: "Username and password are required" });
       }
-      const user = await User.findOne({ username, password }).select("-password").exec();
+      const user = await User.findOne({ username, password })
+         .select("-password")
+         .exec();
       if (!user) {
-         return res.status(401).json({ message: "Username or password incorrect" });
+         return res
+            .status(401)
+            .json({ message: "Username or password incorrect" });
       } else {
          return res.status(200).json(user);
       }
@@ -50,9 +56,7 @@ const createUser = asyncHandler(async (req, res) => {
       // check for duplicate
       const duplicate = await User.findOne({ username }).lean().exec();
       if (duplicate) {
-         return res
-            .status(409)
-            .json({ message: `Username already existed` });
+         return res.status(409).json({ message: `Username already existed` });
       }
       // hash password
       const userObject = {
