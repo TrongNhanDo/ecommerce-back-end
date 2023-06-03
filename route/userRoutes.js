@@ -10,6 +10,7 @@ router
    .delete(usersController.deleteUser);
 
 router.route("/login").post(usersController.loginUser);
+router.route("/sort").post(usersController.getSortedData);
 router.route("/:id").get(usersController.getUserById);
 
 module.exports = router;

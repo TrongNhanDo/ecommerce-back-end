@@ -6,7 +6,10 @@ const User = require("../models/User");
 // @access private
 const getAllUser = asyncHandler(async (req, res) => {
    try {
-      const users = await User.find().select("-password").lean();
+      const users = await User.find()
+         .sort({ createdAt: 1 })
+         .select("-password")
+         .lean();
       if (!users || !users.length) {
          return res.status(400).json({ message: "No users found" });
       }
@@ -60,7 +63,8 @@ const createUser = asyncHandler(async (req, res) => {
          username,
          password,
          role: role || 1,
-         active: active !== undefined && typeof active === Boolean ? active : true
+         active:
+            active !== undefined && typeof active === Boolean ? active : true,
       };
       // create and store new user
       const user = await User.create(userObject);
@@ -85,7 +89,7 @@ const createUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
    try {
       const { id, username, role, active, password } = req.body;
-      if (!id || id === '' || id === undefined) {
+      if (!id || id === "" || id === undefined) {
          return res.status(400).json({ message: "User Id not found" });
       }
       // get user by id
@@ -97,7 +101,9 @@ const updateUser = asyncHandler(async (req, res) => {
       if (username && username !== "" && username !== user.username) {
          const duplicate = await User.findOne({ username }).lean().exec();
          if (duplicate) {
-            return res.status(409).json({ message: `Username '${username}' already existed` });
+            return res
+               .status(409)
+               .json({ message: `Username '${username}' already existed` });
          }
       }
       // confirm update data
@@ -114,7 +120,9 @@ const updateUser = asyncHandler(async (req, res) => {
          }
       );
       if (updateUser) {
-         return res.status(201).json({ updateUser, message: "Account has been updated" });
+         return res
+            .status(201)
+            .json({ updateUser, message: "Account has been updated" });
       } else {
          return res.status(400).json({ message: "Update user fail" });
       }
@@ -162,6 +170,25 @@ const getUserById = asyncHandler(async (req, res) => {
    }
 });
 
+const getSortedData = asyncHandler(async (req, res) => {
+   try {
+      const { column, condition } = req.body;
+      const sortOptions = {
+         [column]: condition,
+      };
+      const users = await User.find()
+         .sort(sortOptions)
+         .select("-password")
+         .lean();
+      if (!users || !users.length) {
+         return res.status(400).json({ message: "No users found" });
+      }
+      return res.json(users);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 module.exports = {
    getAllUser,
    createUser,
@@ -169,4 +196,5 @@ module.exports = {
    deleteUser,
    getUserById,
    loginUser,
+   getSortedData,
 };
