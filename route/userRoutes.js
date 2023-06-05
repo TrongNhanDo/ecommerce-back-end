@@ -11,6 +11,7 @@ router
 
 router.route("/login").post(usersController.loginUser);
 router.route("/sort").post(usersController.getSortedData);
+router.route("/paginate").post(usersController.getUserPaginate);
 router.route("/:id").get(usersController.getUserById);
 
 module.exports = router;

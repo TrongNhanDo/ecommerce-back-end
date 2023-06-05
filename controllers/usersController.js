@@ -189,6 +189,22 @@ const getSortedData = asyncHandler(async (req, res) => {
    }
 });
 
+const getUserPaginate = asyncHandler(async (req, res) => {
+   try {
+      const { perPage, page } = req.body;
+      const users = await User.find()
+         .skip(perPage * (page || 1) - perPage)
+         .limit(perPage)
+         .exec();
+      if (!users || !users.length) {
+         return res.status(400).json({ message: "No users found" });
+      }
+      return res.json(users);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 module.exports = {
    getAllUser,
    createUser,
@@ -197,4 +213,5 @@ module.exports = {
    getUserById,
    loginUser,
    getSortedData,
+   getUserPaginate,
 };
