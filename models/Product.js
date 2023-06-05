@@ -55,4 +55,29 @@ const productSchema = new mongoose.Schema(
    }
 );
 
+productSchema.set("toObject", { virtuals: true });
+productSchema.set("toJSON", { virtuals: true });
+
+// age Model
+productSchema.virtual("age", {
+   ref: "age",
+   localField: "ageId",
+   foreignField: "ageId",
+   justOne: true,
+});
+// branch Model
+productSchema.virtual("branch", {
+   ref: "branch",
+   localField: "branchId",
+   foreignField: "branchId",
+   justOne: true,
+});
+// skill Model
+productSchema.virtual("skill", {
+   ref: "skill",
+   localField: "skillId",
+   foreignField: "skillId",
+   justOne: true,
+});
+
 module.exports = mongoose.model("product", productSchema);

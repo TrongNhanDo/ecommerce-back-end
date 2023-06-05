@@ -3,7 +3,9 @@ const Product = require("../models/Product");
 
 // get all products
 const getAllProduct = asyncHandler(async (req, res) => {
-   const products = await Product.find().lean();
+   const products = await Product.find()
+      .populate(["age", "branch", "skill"])
+      .lean();
    if (!products || !products.length) {
       return res.json({ message: "No product found" });
    }
@@ -184,7 +186,9 @@ const getProductById = asyncHandler(async (req, res) => {
    if (!productId) {
       return res.status(404).json({ message: "Product ID is required" });
    }
-   const product = await Product.findById(productId).exec();
+   const product = await Product.findById(productId)
+      .populate(["age", "branch", "skill"])
+      .exec();
    if (!product) {
       return res.status(400).json({ message: "Product not found" });
    }
@@ -197,7 +201,9 @@ const getProductByAgeId = asyncHandler(async (req, res) => {
    if (!ageId) {
       return res.status(404).json({ message: "Age ID is required" });
    }
-   const product = await Product.find({ ageId }).exec();
+   const product = await Product.find({ ageId })
+      .populate(["age", "branch", "skill"])
+      .exec();
    if (!product || !product.length) {
       return res.status(400).json({ message: "Product not found" });
    }
@@ -210,7 +216,9 @@ const getProductByBranchId = asyncHandler(async (req, res) => {
    if (!branchId) {
       return res.status(404).json({ message: "Branch ID is required" });
    }
-   const product = await Product.find({ branchId }).exec();
+   const product = await Product.find({ branchId })
+      .populate(["age", "branch", "skill"])
+      .exec();
    if (!product || !product.length) {
       return res.status(400).json({ message: "Product not found" });
    }
@@ -223,7 +231,9 @@ const getProductBySkillId = asyncHandler(async (req, res) => {
    if (!skillId) {
       return res.status(404).json({ message: "Skill ID is required" });
    }
-   const product = await Product.find({ skillId }).exec();
+   const product = await Product.find({ skillId })
+      .populate(["age", "branch", "skill"])
+      .exec();
    if (!product || !product.length) {
       return res.status(400).json({ message: "Product not found" });
    }
