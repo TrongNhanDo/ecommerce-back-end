@@ -36,13 +36,8 @@ const insertNewProduct = asyncHandler(async (req, res) => {
          skillId,
          productName,
          price,
-         describes,
          amount,
          image1,
-         image2,
-         image3,
-         image4,
-         image5,
       ];
       // confirm data
       if (inputArray.some((value) => !value || value === "")) {
