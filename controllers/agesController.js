@@ -136,10 +136,28 @@ const getCategoryById = asyncHandler(async (req, res) => {
    }
 });
 
+const getAgePaginate = asyncHandler(async (req, res) => {
+   try {
+      const { perPage, page } = req.body;
+      const ages = await Age.find()
+         .sort({ ageId: 1 })
+         .skip(perPage * (page || 1) - perPage)
+         .limit(perPage)
+         .exec();
+      if (!ages || !ages.length) {
+         return res.status(400).json({ message: "No ages found" });
+      }
+      return res.json(ages);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 module.exports = {
    getAllCategory,
    createCategory,
    updateCategory,
    deleteCategory,
    getCategoryById,
+   getAgePaginate,
 };

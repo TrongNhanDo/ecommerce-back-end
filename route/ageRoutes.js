@@ -9,6 +9,7 @@ router
    .patch(agesController.updateCategory)
    .delete(agesController.deleteCategory);
 
+router.route("/paginate").post(agesController.getAgePaginate);
 router.route("/:ageId").get(agesController.getCategoryById);
 
 module.exports = router;
