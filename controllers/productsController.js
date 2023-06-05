@@ -235,6 +235,20 @@ const getProductBySkillId = asyncHandler(async (req, res) => {
    return res.status(201).json(product);
 });
 
+const getProductPaginate = asyncHandler(async (req, res) => {
+   const { perPage, page } = req.body;
+   const products = await Product.find()
+      .sort({ createdAt: 1 })
+      .populate(["age", "branch", "skill"])
+      .skip(perPage * (page || 1) - perPage)
+      .limit(perPage)
+      .exec();
+   if (!products || !products.length) {
+      return res.json({ message: "No product found" });
+   }
+   return res.json(products);
+});
+
 module.exports = {
    getAllProduct,
    insertNewProduct,
@@ -244,4 +258,5 @@ module.exports = {
    getProductByAgeId,
    getProductByBranchId,
    getProductBySkillId,
+   getProductPaginate,
 };
