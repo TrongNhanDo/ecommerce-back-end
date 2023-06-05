@@ -1,5 +1,4 @@
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcrypt");
 const User = require("../models/User");
 
 // @desc get all users
@@ -7,14 +6,40 @@ const User = require("../models/User");
 // @access private
 const getAllUser = asyncHandler(async (req, res) => {
    try {
-      const users = await User.find().select("-password").lean();
+      const users = await User.find()
+         .sort({ createdAt: 1 })
+         .select("-password")
+         .lean();
       if (!users || !users.length) {
          return res.status(400).json({ message: "No users found" });
       }
       return res.json(users);
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Get users list fail" });
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
+// login
+const loginUser = asyncHandler(async (req, res) => {
+   try {
+      const { username, password } = req.body;
+      if (!username || !password) {
+         return res
+            .status(400)
+            .json({ message: "Username and password are required" });
+      }
+      const user = await User.findOne({ username, password })
+         .select("-password")
+         .exec();
+      if (!user) {
+         return res
+            .status(401)
+            .json({ message: "Username or password incorrect" });
+      } else {
+         return res.status(200).json(user);
+      }
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -24,24 +49,22 @@ const getAllUser = asyncHandler(async (req, res) => {
 const createUser = asyncHandler(async (req, res) => {
    try {
       // get params from request's body
-      const { username, password, roles } = req.body;
+      const { username, password, role, active } = req.body;
       // confirm data
-      if (!username || !password || !Array.isArray(roles) || !roles.length) {
+      if (!username && !password) {
          return res.status(404).json({ message: "All fields are required" });
       }
       // check for duplicate
       const duplicate = await User.findOne({ username }).lean().exec();
       if (duplicate) {
-         return res
-            .status(409)
-            .json({ message: `Username already existed` });
+         return res.status(409).json({ message: `Username already existed` });
       }
-      // hash password
-      const hashedPwd = await bcrypt.hash(password, 10);
       const userObject = {
          username,
-         password: hashedPwd,
-         roles,
+         password,
+         role: role || 1,
+         active:
+            active !== undefined && typeof active === Boolean ? active : true,
       };
       // create and store new user
       const user = await User.create(userObject);
@@ -56,8 +79,7 @@ const createUser = asyncHandler(async (req, res) => {
          });
       }
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Insert new user fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -66,18 +88,23 @@ const createUser = asyncHandler(async (req, res) => {
 // @access private
 const updateUser = asyncHandler(async (req, res) => {
    try {
-      const { id, username, roles, active, password } = req.body;
+      const { id, username, role, active, password } = req.body;
+      if (!id || id === "" || id === undefined) {
+         return res.status(400).json({ message: "User Id not found" });
+      }
       // get user by id
       const user = await User.findById(id).exec();
       if (!user) {
          return res.status(400).json({ message: "User not found" });
       }
       // check for duplicate
-      const duplicate = await User.findOne({ username }).lean().exec();
-      if (duplicate) {
-         return res
-            .status(409)
-            .json({ message: `Username '${username}' already existed` });
+      if (username && username !== "" && username !== user.username) {
+         const duplicate = await User.findOne({ username }).lean().exec();
+         if (duplicate) {
+            return res
+               .status(409)
+               .json({ message: `Username '${username}' already existed` });
+         }
       }
       // confirm update data
       const updateUser = await User.updateOne(
@@ -86,20 +113,21 @@ const updateUser = asyncHandler(async (req, res) => {
          },
          {
             username: username || user.username,
-            password: password ? await bcrypt.hash(password, 10) : user.password,
-            roles: roles || user.roles,
+            password: password || user.password,
+            role: role || user.role,
             active: active || user.active,
             updatedAt: new Date(),
          }
       );
       if (updateUser) {
-         return res.json({ message: `${user.username} has been updated` });
+         return res
+            .status(201)
+            .json({ updateUser, message: "Account has been updated" });
       } else {
          return res.status(400).json({ message: "Update user fail" });
       }
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Update user fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -121,8 +149,7 @@ const deleteUser = asyncHandler(async (req, res) => {
          message: `Username '${result.username}' has been deleted`,
       });
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Delete user fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -139,8 +166,42 @@ const getUserById = asyncHandler(async (req, res) => {
       }
       return res.status(201).json(user);
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Get user by id fail" });
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
+const getSortedData = asyncHandler(async (req, res) => {
+   try {
+      const { column, condition } = req.body;
+      const sortOptions = {
+         [column]: condition,
+      };
+      const users = await User.find()
+         .sort(sortOptions)
+         .select("-password")
+         .lean();
+      if (!users || !users.length) {
+         return res.status(400).json({ message: "No users found" });
+      }
+      return res.json(users);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
+const getUserPaginate = asyncHandler(async (req, res) => {
+   try {
+      const { perPage, page } = req.body;
+      const users = await User.find()
+         .skip(perPage * (page || 1) - perPage)
+         .limit(perPage)
+         .exec();
+      if (!users || !users.length) {
+         return res.status(400).json({ message: "No users found" });
+      }
+      return res.json(users);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -150,4 +211,7 @@ module.exports = {
    updateUser,
    deleteUser,
    getUserById,
+   loginUser,
+   getSortedData,
+   getUserPaginate,
 };
