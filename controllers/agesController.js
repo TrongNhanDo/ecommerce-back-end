@@ -27,11 +27,23 @@ const createCategory = asyncHandler(async (req, res) => {
          return res.status(404).json({ message: "All fields are required" });
       }
       // check for duplicate
-      const duplicate = await Age.findOne({ ageId, ageName }).lean().exec();
-      if (duplicate) {
+      const duplicate = await Age.find({
+         $or: [{ ageId: ageId }, { ageName: ageName }],
+      })
+         .lean()
+         .exec();
+
+      if (duplicate && duplicate.length) {
+         const arrayError = [];
+         if (duplicate.some((value) => value.ageId == ageId)) {
+            arrayError.push("ageId");
+         }
+         if (duplicate.some((value) => value.ageName === ageName)) {
+            arrayError.push("ageName");
+         }
          return res
             .status(409)
-            .json({ message: `Category ID '${ageId} already existed'` });
+            .json({ message: `${arrayError.join(", ")} already existed` });
       }
       // confirm data
       const categoryObject = {
