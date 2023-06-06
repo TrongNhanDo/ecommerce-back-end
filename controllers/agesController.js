@@ -61,18 +61,18 @@ const createCategory = asyncHandler(async (req, res) => {
 // @access private
 const updateCategory = asyncHandler(async (req, res) => {
    try {
-      const { id, ageId, ageName } = req.body;
+      const { id, ageName } = req.body;
       // get user by id
       const category = await Age.findById(id).lean().exec();
       if (!category) {
          return res.status(400).json({ message: "Category not found" });
       }
       // check for duplicate
-      const duplicate = await Age.findOne({ ageId }).lean().exec();
-      if (duplicate && ageId !== category.ageId) {
+      const duplicate = await Age.findOne({ ageName }).lean().exec();
+      if (duplicate && duplicate._id !== category._id) {
          return res
             .status(409)
-            .json({ message: `Category ID '${ageId}' already existed` });
+            .json({ message: `Category name already existed` });
       }
       // confirm update data
       const updateCategory = await Age.updateOne(
@@ -80,7 +80,6 @@ const updateCategory = asyncHandler(async (req, res) => {
             _id: id,
          },
          {
-            ageId,
             ageName,
             updatedAt: new Date(),
          }
