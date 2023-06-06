@@ -143,10 +143,28 @@ const getCategoryById = asyncHandler(async (req, res) => {
    }
 });
 
+const getBranchPaginate = asyncHandler(async (req, res) => {
+   try {
+      const { perPage, page } = req.body;
+      const branches = await Branch.find()
+         .sort({ branchId: 1 })
+         .skip(perPage * (page || 1) - perPage)
+         .limit(perPage)
+         .exec();
+      if (!branches || !branches.length) {
+         return res.status(400).json({ message: "No branches found" });
+      }
+      return res.json(branches);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 module.exports = {
    getAllCategory,
    createCategory,
    updateCategory,
    deleteCategory,
    getCategoryById,
+   getBranchPaginate,
 };
