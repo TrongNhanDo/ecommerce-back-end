@@ -22,23 +22,33 @@ const getAllCategory = asyncHandler(async (req, res) => {
 // @access private
 const createCategory = asyncHandler(async (req, res) => {
    try {
-      const { branchName } = req.body;
+      const { branchId, branchName } = req.body;
       // confirm data
-      if (!branchName) {
+      if (!branchId || !branchName) {
          return res.status(404).json({ message: "All fields are required" });
       }
       // check for duplicate
-      const duplicate = await Branch.findOne({ branchName }).lean().exec();
-      if (duplicate) {
+      const duplicate = await Branch.find({
+         $or: [{ branchId: branchId }, { branchName: branchName }],
+      })
+         .lean()
+         .exec();
+
+      if (duplicate && duplicate.length) {
+         const arrayError = [];
+         if (duplicate.some((value) => value.branchId == branchId)) {
+            arrayError.push("branchId");
+         }
+         if (duplicate.some((value) => value.branchName === branchName)) {
+            arrayError.push("branchName");
+         }
          return res
             .status(409)
-            .json({ message: `Category '${branchName} already existed'` });
+            .json({ message: `${arrayError.join(", ")} already existed` });
       }
-      // get max cateId
-      const maxCategory = await Branch.find().sort("-branchId").limit(1);
+      // confirm data
       const categoryObject = {
-         branchId:
-            parseInt(maxCategory[0] ? maxCategory[0].branchId || 0 : 0) + 1,
+         branchId,
          branchName,
          createdAt: new Date(),
          updatedAt: new Date(),
@@ -50,13 +60,11 @@ const createCategory = asyncHandler(async (req, res) => {
          return res.status(201).json({
             message: `New category ${branchName} has been created`,
          });
-      } else {
-         return res.status(400).json({
-            message: "Invalid category data received",
-         });
       }
+      return res.status(400).json({
+         message: "Invalid category data received",
+      });
    } catch (error) {
-      console.log(error);
       return res.status(400).json({ message: "Insert new category fail" });
    }
 });
@@ -66,18 +74,18 @@ const createCategory = asyncHandler(async (req, res) => {
 // @access private
 const updateCategory = asyncHandler(async (req, res) => {
    try {
-      const { id, branchId, branchName } = req.body;
+      const { id, branchName } = req.body;
       // get category by id
       const category = await Branch.findById(id).lean().exec();
       if (!category) {
          return res.status(400).json({ message: "Category not found" });
       }
       // check for duplicate
-      const duplicate = await Branch.findOne({ branchId }).lean().exec();
-      if (duplicate) {
+      const duplicate = await Branch.findOne({ branchName }).lean().exec();
+      if (duplicate && category._id !== duplicate._id) {
          return res
             .status(409)
-            .json({ message: `Category ID '${branchId}' already existed` });
+            .json({ message: `Category Name '${branchName}' already existed` });
       }
       // confirm update data
       const updateCategory = await Branch.updateOne(
@@ -85,7 +93,6 @@ const updateCategory = asyncHandler(async (req, res) => {
             _id: id,
          },
          {
-            branchId,
             branchName,
             updatedAt: new Date(),
          }
