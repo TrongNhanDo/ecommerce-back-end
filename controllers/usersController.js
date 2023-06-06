@@ -60,8 +60,8 @@ const createUser = asyncHandler(async (req, res) => {
          return res.status(409).json({ message: `Username already existed` });
       }
       const userObject = {
-         username,
-         password,
+         username: username,
+         password: password,
          role: role || 1,
          active:
             active !== undefined && typeof active === Boolean ? active : true,

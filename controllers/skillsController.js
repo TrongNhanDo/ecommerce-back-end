@@ -12,8 +12,7 @@ const getAllCategory = asyncHandler(async (req, res) => {
       }
       return res.json(categories);
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Get categories list fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -22,24 +21,34 @@ const getAllCategory = asyncHandler(async (req, res) => {
 // @access private
 const createCategory = asyncHandler(async (req, res) => {
    try {
-      const { skillName } = req.body;
+      const { skillId, skillName } = req.body;
       // confirm data
-      if (!skillName) {
+      if (!skillId || !skillName) {
          return res.status(404).json({ message: "All fields are required" });
       }
       // check for duplicate
-      const duplicate = await Skill.findOne({ skillName }).lean().exec();
-      if (duplicate) {
+      const duplicate = await Skill.find({
+         $or: [{ skillId: skillId }, { skillName: skillName }],
+      })
+         .lean()
+         .exec();
+
+      if (duplicate && duplicate.length) {
+         const arrayError = [];
+         if (duplicate.some((value) => value.skillId == skillId)) {
+            arrayError.push("skillId");
+         }
+         if (duplicate.some((value) => value.skillName === skillName)) {
+            arrayError.push("skillName");
+         }
          return res
             .status(409)
-            .json({ message: `Category '${skillName} already existed'` });
+            .json({ message: `${arrayError.join(", ")} already existed` });
       }
-      // get max cateId
-      const maxCategory = await Skill.find().sort("-skillId").limit(1);
+      // confirm data
       const categoryObject = {
-         skillId:
-            parseInt(maxCategory[0] ? maxCategory[0].skillId || 0 : 0) + 1,
-         skillName,
+         skillId: skillId,
+         skillName: skillName,
          createdAt: new Date(),
          updatedAt: new Date(),
       };
@@ -50,14 +59,12 @@ const createCategory = asyncHandler(async (req, res) => {
          return res.status(201).json({
             message: `New category ${skillName} has been created`,
          });
-      } else {
-         return res.status(400).json({
-            message: "Invalid category data received",
-         });
       }
+      return res.status(400).json({
+         message: "Invalid category data received",
+      });
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Insert new category fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -66,26 +73,26 @@ const createCategory = asyncHandler(async (req, res) => {
 // @access private
 const updateCategory = asyncHandler(async (req, res) => {
    try {
-      const { skillId, skillName } = req.body;
+      const { id, skillName } = req.body;
       // get user by id
-      const category = await Skill.findOne({ skillId }).lean().exec();
+      const category = await Skill.findById(id).lean().exec();
       if (!category) {
          return res.status(400).json({ message: "Category not found" });
       }
       // check for duplicate
       const duplicate = await Skill.findOne({ skillName }).lean().exec();
-      if (duplicate) {
-         return res
-            .status(409)
-            .json({ message: `Category '${skillName}' already existed` });
+      if (duplicate && category._id !== duplicate._id) {
+         return res.status(409).json({
+            message: `Skill Category Name '${skillName}' already existed`,
+         });
       }
       // confirm update data
       const updateCategory = await Skill.updateOne(
          {
-            skillId,
+            _id: id,
          },
          {
-            skillName,
+            skillName: skillName,
             updatedAt: new Date(),
          }
       );
@@ -95,8 +102,7 @@ const updateCategory = asyncHandler(async (req, res) => {
          return res.status(400).json({ message: "Update category fail" });
       }
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Update category fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -119,8 +125,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
          message: `Category ${result.skillName} with ID ${result.skillId} has been deleted`,
       });
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Delete category fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -137,8 +142,24 @@ const getCategoryById = asyncHandler(async (req, res) => {
       }
       return res.status(201).json(category);
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Get category by id fail" });
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
+const getSkillPaginate = asyncHandler(async (req, res) => {
+   try {
+      const { perPage, page } = req.body;
+      const skills = await Skill.find()
+         .sort({ ageId: 1 })
+         .skip(perPage * (page || 1) - perPage)
+         .limit(perPage)
+         .exec();
+      if (!skills || !skills.length) {
+         return res.status(400).json({ message: "No skills found" });
+      }
+      return res.json(skills);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -148,4 +169,5 @@ module.exports = {
    updateCategory,
    deleteCategory,
    getCategoryById,
+   getSkillPaginate,
 };

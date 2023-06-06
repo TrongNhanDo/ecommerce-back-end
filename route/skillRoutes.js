@@ -9,6 +9,7 @@ router
    .patch(skillsController.updateCategory)
    .delete(skillsController.deleteCategory);
 
+router.route("/paginate").post(skillsController.getSkillPaginate);
 router.route("/:skillId").get(skillsController.getCategoryById);
 
 module.exports = router;

@@ -12,8 +12,7 @@ const getAllCategory = asyncHandler(async (req, res) => {
       }
       return res.json(categories);
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Get categories list fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -48,8 +47,8 @@ const createCategory = asyncHandler(async (req, res) => {
       }
       // confirm data
       const categoryObject = {
-         branchId,
-         branchName,
+         branchId: branchId,
+         branchName: branchName,
          createdAt: new Date(),
          updatedAt: new Date(),
       };
@@ -65,7 +64,7 @@ const createCategory = asyncHandler(async (req, res) => {
          message: "Invalid category data received",
       });
    } catch (error) {
-      return res.status(400).json({ message: "Insert new category fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -93,7 +92,7 @@ const updateCategory = asyncHandler(async (req, res) => {
             _id: id,
          },
          {
-            branchName,
+            branchName: branchName,
             updatedAt: new Date(),
          }
       );
@@ -103,8 +102,7 @@ const updateCategory = asyncHandler(async (req, res) => {
          return res.json({ message: "Update category fail" });
       }
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Update category fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -127,8 +125,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
          message: `Category ${result.branchName} with ID ${result.branchId} has been deleted`,
       });
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Delete category fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
@@ -145,8 +142,7 @@ const getCategoryById = asyncHandler(async (req, res) => {
       }
       return res.status(201).json(category);
    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ message: "Get category by id fail" });
+      return res.status(400).json({ error, message: "Server's error" });
    }
 });
 
