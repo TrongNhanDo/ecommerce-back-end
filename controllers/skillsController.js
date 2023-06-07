@@ -111,12 +111,12 @@ const updateCategory = asyncHandler(async (req, res) => {
 // @access private
 const deleteCategory = asyncHandler(async (req, res) => {
    try {
-      const { skillId } = req.body;
-      if (!skillId) {
+      const { id } = req.body;
+      if (!id) {
          return res.status(404).json({ message: "Category ID is required" });
       }
 
-      const category = await Skill.findOne({ skillId }).exec();
+      const category = await Skill.findById(id).exec();
       if (!category) {
          return res.status(400).json({ message: "Category not found" });
       }
@@ -132,11 +132,11 @@ const deleteCategory = asyncHandler(async (req, res) => {
 // get user by id
 const getCategoryById = asyncHandler(async (req, res) => {
    try {
-      const { skillId } = req.params;
-      if (!skillId) {
+      const { id } = req.params;
+      if (!id) {
          return res.status(404).json({ message: "Category ID is required" });
       }
-      const category = await Skill.findOne({ skillId }).exec();
+      const category = await Skill.findById(id).exec();
       if (!category) {
          return res.status(400).json({ message: "Category not found" });
       }
@@ -150,7 +150,7 @@ const getSkillPaginate = asyncHandler(async (req, res) => {
    try {
       const { perPage, page } = req.body;
       const skills = await Skill.find()
-         .sort({ ageId: 1 })
+         .sort({ skillId: 1 })
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
          .exec();

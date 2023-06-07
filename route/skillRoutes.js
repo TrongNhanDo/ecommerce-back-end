@@ -10,6 +10,6 @@ router
    .delete(skillsController.deleteCategory);
 
 router.route("/paginate").post(skillsController.getSkillPaginate);
-router.route("/:skillId").get(skillsController.getCategoryById);
+router.route("/:id").get(skillsController.getCategoryById);
 
 module.exports = router;

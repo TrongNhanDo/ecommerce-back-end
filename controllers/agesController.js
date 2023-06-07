@@ -110,11 +110,11 @@ const updateCategory = asyncHandler(async (req, res) => {
 // @access private
 const deleteCategory = asyncHandler(async (req, res) => {
    try {
-      const { ageId } = req.body;
-      if (!ageId) {
+      const { id } = req.body;
+      if (!id) {
          return res.status(404).json({ message: "Category ID is required" });
       }
-      const category = await Age.findById(ageId).exec();
+      const category = await Age.findById(id).exec();
       if (!category) {
          return res.status(400).json({ message: "Category not found" });
       }

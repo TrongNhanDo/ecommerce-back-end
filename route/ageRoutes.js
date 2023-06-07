@@ -10,6 +10,6 @@ router
    .delete(agesController.deleteCategory);
 
 router.route("/paginate").post(agesController.getAgePaginate);
-router.route("/:ageId").get(agesController.getCategoryById);
+router.route("/:id").get(agesController.getCategoryById);
 
 module.exports = router;
