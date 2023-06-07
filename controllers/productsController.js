@@ -40,8 +40,13 @@ const insertNewProduct = asyncHandler(async (req, res) => {
          skillId,
          productName,
          price,
+         describes,
          amount,
          image1,
+         image2,
+         image3,
+         image4,
+         image5,
       ];
       // confirm data
       if (inputArray.some((value) => !value || value === "")) {
@@ -56,18 +61,18 @@ const insertNewProduct = asyncHandler(async (req, res) => {
       }
       // hash password
       const userObject = {
-         ageId,
-         branchId,
-         skillId,
-         productName,
-         price,
-         describes,
-         amount,
-         image1,
-         image2: image2 || "",
-         image3: image3 || "",
-         image4: image4 || "",
-         image5: image5 || "",
+         ageId: ageId,
+         branchId: branchId,
+         skillId: skillId,
+         productName: productName,
+         price: price,
+         describes: describes,
+         amount: amount,
+         image1: image1,
+         image2: image2,
+         image3: image3,
+         image4: image4,
+         image5: image5,
       };
       // create and store new user
       const product = await Product.create(userObject);
@@ -111,16 +116,21 @@ const updateProduct = asyncHandler(async (req, res) => {
          skillId,
          productName,
          price,
+         describes,
          amount,
          image1,
+         image2,
+         image3,
+         image4,
+         image5,
       ];
-      // get user by id
-      if (inputArray.some((value) => !value || value === "")) {
-         return res.status(404).json({ message: "All fields are required" });
-      }
       const product = await Product.findById(productId).exec();
       if (!product) {
          return res.status(400).json({ message: "Product not found" });
+      }
+      // get user by id
+      if (inputArray.some((value) => !value || value === "")) {
+         return res.status(404).json({ message: "All fields are required" });
       }
       // check for duplicate
       const duplicate = await Product.findOne({ productName }).lean().exec();
@@ -143,10 +153,10 @@ const updateProduct = asyncHandler(async (req, res) => {
             describes: describes,
             amount: amount,
             image1: image1,
-            image2: image2 || "",
-            image3: image3 || "",
-            image4: image4 || "",
-            image5: image5 || "",
+            image2: image2,
+            image3: image3,
+            image4: image4,
+            image5: image5,
          }
       );
       if (updateProduct) {

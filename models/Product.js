@@ -39,15 +39,19 @@ const productSchema = new mongoose.Schema(
       },
       image2: {
          type: String,
+         require: true,
       },
       image3: {
          type: String,
+         require: true,
       },
       image4: {
          type: String,
+         require: true,
       },
       image5: {
          type: String,
+         require: true,
       },
    },
    {
