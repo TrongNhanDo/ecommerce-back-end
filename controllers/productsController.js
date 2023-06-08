@@ -28,11 +28,7 @@ const insertNewProduct = asyncHandler(async (req, res) => {
          price,
          describes,
          amount,
-         image1,
-         image2,
-         image3,
-         image4,
-         image5,
+         images,
       } = req.body;
       const inputArray = [
          ageId,
@@ -42,11 +38,7 @@ const insertNewProduct = asyncHandler(async (req, res) => {
          price,
          describes,
          amount,
-         image1,
-         image2,
-         image3,
-         image4,
-         image5,
+         images,
       ];
       // confirm data
       if (inputArray.some((value) => !value || value === "")) {
@@ -68,11 +60,7 @@ const insertNewProduct = asyncHandler(async (req, res) => {
          price: price,
          describes: describes,
          amount: amount,
-         image1: image1,
-         image2: image2,
-         image3: image3,
-         image4: image4,
-         image5: image5,
+         images: images,
       };
       // create and store new user
       const product = await Product.create(userObject);
@@ -103,11 +91,7 @@ const updateProduct = asyncHandler(async (req, res) => {
          price,
          describes,
          amount,
-         image1,
-         image2,
-         image3,
-         image4,
-         image5,
+         images,
       } = req.body;
       const inputArray = [
          productId,
@@ -118,11 +102,7 @@ const updateProduct = asyncHandler(async (req, res) => {
          price,
          describes,
          amount,
-         image1,
-         image2,
-         image3,
-         image4,
-         image5,
+         images,
       ];
       const product = await Product.findById(productId).exec();
       if (!product) {
@@ -152,11 +132,7 @@ const updateProduct = asyncHandler(async (req, res) => {
             price: price,
             describes: describes,
             amount: amount,
-            image1: image1,
-            image2: image2,
-            image3: image3,
-            image4: image4,
-            image5: image5,
+            images: images,
          }
       );
       if (updateProduct) {
