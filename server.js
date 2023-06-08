@@ -36,6 +36,8 @@ app.use("/branches", require("./route/branchRoutes"));
 app.use("/skills", require("./route/skillRoutes"));
 // route for products
 app.use("/products", require("./route/productRoutes"));
+// route for roles
+app.use("/roles", require("./route/roleRoutes"));
 
 app.all("*", (req, res) => {
    res.status(404);
