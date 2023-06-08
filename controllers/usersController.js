@@ -98,13 +98,11 @@ const updateUser = asyncHandler(async (req, res) => {
          return res.status(400).json({ message: "User not found" });
       }
       // check for duplicate
-      if (username && username !== "" && username !== user.username) {
-         const duplicate = await User.findOne({ username }).lean().exec();
-         if (duplicate) {
-            return res
-               .status(409)
-               .json({ message: `Username '${username}' already existed` });
-         }
+      const duplicate = await User.findOne({ username }).lean().exec();
+      if (duplicate && user._id.toString() !== duplicate._id.toString()) {
+         return res
+            .status(409)
+            .json({ message: `Username '${username}' already existed` });
       }
       // confirm update data
       const updateUser = await User.updateOne(

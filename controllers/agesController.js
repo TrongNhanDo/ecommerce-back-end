@@ -81,7 +81,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       }
       // check for duplicate
       const duplicate = await Age.findOne({ ageName }).lean().exec();
-      if (duplicate && duplicate._id !== category._id) {
+      if (duplicate && duplicate._id.toString() !== category._id.toString()) {
          return res
             .status(409)
             .json({ message: `Category name already existed` });

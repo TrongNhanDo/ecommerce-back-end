@@ -81,7 +81,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       }
       // check for duplicate
       const duplicate = await Skill.findOne({ skillName }).lean().exec();
-      if (duplicate && category._id !== duplicate._id) {
+      if (duplicate && category._id.toString() !== duplicate._id.toString()) {
          return res.status(409).json({
             message: `Skill Category Name '${skillName}' already existed`,
          });

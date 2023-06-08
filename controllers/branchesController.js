@@ -81,7 +81,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       }
       // check for duplicate
       const duplicate = await Branch.findOne({ branchName }).lean().exec();
-      if (duplicate && category._id !== duplicate._id) {
+      if (duplicate && category._id.toString() !== duplicate._id.toString()) {
          return res
             .status(409)
             .json({ message: `Category Name '${branchName}' already existed` });
