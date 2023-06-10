@@ -6,6 +6,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
    try {
       const products = await Product.find()
          .populate(["age", "branch", "skill"])
+         .sort({ createdAt: 1 })
          .lean();
       if (!products || !products.length) {
          return res.json({ message: "No product found" });

@@ -52,7 +52,7 @@ const loginUser = asyncHandler(async (req, res) => {
 const createUser = asyncHandler(async (req, res) => {
    try {
       // get params from request's body
-      const { username, password, role, active } = req.body;
+      const { username, password, roleId, active } = req.body;
       // confirm data
       if (!username && !password) {
          return res.status(404).json({ message: "All fields are required" });
@@ -65,7 +65,7 @@ const createUser = asyncHandler(async (req, res) => {
       const userObject = {
          username: username,
          password: password,
-         role: role || 1,
+         roleId: roleId || 1,
          active:
             active !== undefined && typeof active === Boolean ? active : true,
       };
@@ -91,7 +91,7 @@ const createUser = asyncHandler(async (req, res) => {
 // @access private
 const updateUser = asyncHandler(async (req, res) => {
    try {
-      const { id, username, role, active, password } = req.body;
+      const { id, username, roleId, active, password } = req.body;
       if (!id || id === "" || id === undefined) {
          return res.status(400).json({ message: "User Id not found" });
       }
@@ -115,7 +115,7 @@ const updateUser = asyncHandler(async (req, res) => {
          {
             username: username || user.username,
             password: password || user.password,
-            role: role || user.role,
+            roleId: roleId || user.roleId,
             active: active || user.active,
             updatedAt: new Date(),
          }
@@ -161,7 +161,11 @@ const getUserById = asyncHandler(async (req, res) => {
       if (!id) {
          return res.status(404).json({ message: "User ID is required" });
       }
-      const user = await User.findById(id).populate(["role"]).lean().exec();
+      const user = await User.findById(id)
+         .select("-password")
+         .populate(["role"])
+         .lean()
+         .exec();
       if (!user) {
          return res.status(400).json({ message: "User not found" });
       }
@@ -196,6 +200,8 @@ const getUserPaginate = asyncHandler(async (req, res) => {
       const { perPage, page } = req.body;
       const users = await User.find()
          .populate(["role"])
+         .select("-password")
+         .sort({ createdAt: 1 })
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
          .lean()
