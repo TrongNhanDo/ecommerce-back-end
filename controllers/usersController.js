@@ -7,6 +7,7 @@ const User = require("../models/User");
 const getAllUser = asyncHandler(async (req, res) => {
    try {
       const users = await User.find()
+         .populate(["role"])
          .sort({ createdAt: 1 })
          .select("-password")
          .lean();
@@ -29,7 +30,9 @@ const loginUser = asyncHandler(async (req, res) => {
             .json({ message: "Username and password are required" });
       }
       const user = await User.findOne({ username, password })
+         .populate(["role"])
          .select("-password")
+         .lean()
          .exec();
       if (!user) {
          return res
@@ -158,7 +161,7 @@ const getUserById = asyncHandler(async (req, res) => {
       if (!id) {
          return res.status(404).json({ message: "User ID is required" });
       }
-      const user = await User.findById(id).exec();
+      const user = await User.findById(id).populate(["role"]).lean().exec();
       if (!user) {
          return res.status(400).json({ message: "User not found" });
       }
@@ -175,6 +178,7 @@ const getSortedData = asyncHandler(async (req, res) => {
          [column]: condition,
       };
       const users = await User.find()
+         .populate(["role"])
          .sort(sortOptions)
          .select("-password")
          .lean();
@@ -191,8 +195,10 @@ const getUserPaginate = asyncHandler(async (req, res) => {
    try {
       const { perPage, page } = req.body;
       const users = await User.find()
+         .populate(["role"])
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
+         .lean()
          .exec();
       if (!users || !users.length) {
          return res.status(400).json({ message: "No users found" });

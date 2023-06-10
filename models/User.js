@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
          type: String,
          require: true,
       },
-      role: {
+      roleId: {
          type: Number,
          default: 1,
       },
@@ -23,5 +23,16 @@ const userSchema = new mongoose.Schema(
       timestamps: true,
    }
 );
+
+userSchema.set("toObject", { virtuals: true });
+userSchema.set("toJSON", { virtuals: true });
+
+// role Model
+userSchema.virtual("role", {
+   ref: "role",
+   localField: "roleId",
+   foreignField: "roleId",
+   justOne: true,
+});
 
 module.exports = mongoose.model("User", userSchema);
