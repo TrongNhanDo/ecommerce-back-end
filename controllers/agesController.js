@@ -152,10 +152,16 @@ const getAgePaginate = asyncHandler(async (req, res) => {
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
          .exec();
-      if (!ages || !ages.length) {
-         return res.status(400).json({ message: "No ages found" });
+      const count = (await Age.find().exec()).length;
+      if (!ages || !ages.length || !count) {
+         return res.status(400).json({ message: "No age category found" });
       }
-      return res.json(ages);
+      return res.json({
+         count: count || 0,
+         returnCnt: ages.length || 0,
+         totalPage: Math.ceil(count / perPage) || 0,
+         ages,
+      });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
    }

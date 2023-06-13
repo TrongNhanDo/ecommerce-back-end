@@ -206,10 +206,16 @@ const getUserPaginate = asyncHandler(async (req, res) => {
          .limit(perPage)
          .lean()
          .exec();
-      if (!users || !users.length) {
+      const count = (await User.find().exec()).length;
+      if (!users || !users.length || !count) {
          return res.status(400).json({ message: "No users found" });
       }
-      return res.json(users);
+      return res.json({
+         count: count || 0,
+         returnCnt: users.length || 0,
+         totalPage: Math.ceil(count / perPage) || 0,
+         users,
+      });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
    }

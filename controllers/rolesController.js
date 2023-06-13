@@ -137,10 +137,16 @@ const getRolePaginate = asyncHandler(async (req, res) => {
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
          .exec();
-      if (!roles || !roles.length) {
-         return res.status(400).json({ message: "No roles found" });
+      const count = (await Role.find().exec()).length;
+      if (!roles || !roles.length || !count) {
+         return res.status(400).json({ message: "No role found" });
       }
-      return res.json(roles);
+      return res.json({
+         count: count || 0,
+         returnCnt: roles.length || 0,
+         totalPage: Math.ceil(count / perPage) || 0,
+         roles,
+      });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
    }

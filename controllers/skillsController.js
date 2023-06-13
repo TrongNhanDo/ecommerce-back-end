@@ -154,10 +154,16 @@ const getSkillPaginate = asyncHandler(async (req, res) => {
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
          .exec();
-      if (!skills || !skills.length) {
-         return res.status(400).json({ message: "No skills found" });
+      const count = (await Skill.find().exec()).length;
+      if (!skills || !skills.length || !count) {
+         return res.status(400).json({ message: "No skill found" });
       }
-      return res.json(skills);
+      return res.json({
+         count: count || 0,
+         returnCnt: skills.length || 0,
+         totalPage: Math.ceil(count / perPage) || 0,
+         skills,
+      });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
    }

@@ -253,10 +253,16 @@ const getProductPaginate = asyncHandler(async (req, res) => {
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
          .exec();
+      const count = (await Product.find().exec()).length;
       if (!products || !products.length) {
          return res.json({ message: "No product found" });
       }
-      return res.json(products);
+      return res.json({
+         count: count || 0,
+         returnCnt: products.length || 0,
+         totalPage: Math.ceil(count / perPage) || 0,
+         products,
+      });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
    }
