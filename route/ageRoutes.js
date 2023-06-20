@@ -9,6 +9,7 @@ router
    .patch(agesController.updateCategory)
    .delete(agesController.deleteCategory);
 
+router.route("/insertMany").post(agesController.insertManyDocuments);
 router.route("/paginate").post(agesController.getAgePaginate);
 router.route("/:id").get(agesController.getCategoryById);
 

@@ -9,6 +9,7 @@ router
    .patch(productsController.updateProduct)
    .delete(productsController.deleteProduct);
 
+router.route("/insertMany").post(productsController.insertManyDocuments);
 router.route("/search-by-age").get(productsController.getProductByAgeId);
 router.route("/search-by-branch").get(productsController.getProductByBranchId);
 router.route("/search-by-skill").get(productsController.getProductBySkillId);

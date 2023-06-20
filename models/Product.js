@@ -33,6 +33,11 @@ const productSchema = new mongoose.Schema(
          type: Number,
          default: 0,
       },
+      rateAmount: {
+         type: Number,
+         default: 0,
+         require: false,
+      },
       images: [
          {
             type: String,

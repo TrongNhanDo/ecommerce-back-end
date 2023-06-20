@@ -9,6 +9,7 @@ router
    .patch(branchesController.updateCategory)
    .delete(branchesController.deleteCategory);
 
+router.route("/insertMany").post(branchesController.insertManyDocuments);
 router.route("/paginate").post(branchesController.getBranchPaginate);
 router.route("/:id").get(branchesController.getCategoryById);
 

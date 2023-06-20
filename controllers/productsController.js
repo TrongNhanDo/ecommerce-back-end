@@ -268,6 +268,23 @@ const getProductPaginate = asyncHandler(async (req, res) => {
    }
 });
 
+const insertManyDocuments = asyncHandler(async (req, res) => {
+   try {
+      const { documents } = req.body;
+      if (!documents || !documents.length) {
+         return res.status(404).json({ message: "List document is required" });
+      }
+      const options = { ordered: true };
+      const result = await Product.insertMany(documents, options);
+      return res.status(201).json({
+         message: `${result.length} documents were inserted`,
+         data: result,
+      });
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 module.exports = {
    getAllProduct,
    insertNewProduct,
@@ -278,4 +295,5 @@ module.exports = {
    getProductByBranchId,
    getProductBySkillId,
    getProductPaginate,
+   insertManyDocuments,
 };

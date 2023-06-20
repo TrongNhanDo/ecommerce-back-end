@@ -9,6 +9,7 @@ router
    .patch(skillsController.updateCategory)
    .delete(skillsController.deleteCategory);
 
+router.route("/insertMany").post(skillsController.insertManyDocuments);
 router.route("/paginate").post(skillsController.getSkillPaginate);
 router.route("/:id").get(skillsController.getCategoryById);
 

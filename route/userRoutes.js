@@ -9,6 +9,7 @@ router
    .patch(usersController.updateUser)
    .delete(usersController.deleteUser);
 
+router.route("/insertMany").post(usersController.insertManyDocuments);
 router.route("/login").post(usersController.loginUser);
 router.route("/sort").post(usersController.getSortedData);
 router.route("/paginate").post(usersController.getUserPaginate);

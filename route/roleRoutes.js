@@ -9,6 +9,7 @@ router
    .patch(rolesController.updateRole)
    .delete(rolesController.deleteRole);
 
+router.route("/insertMany").post(rolesController.insertManyDocuments);
 router.route("/paginate").post(rolesController.getRolePaginate);
 router.route("/:id").get(rolesController.getRoleById);
 

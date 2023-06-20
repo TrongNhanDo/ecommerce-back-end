@@ -21,9 +21,9 @@ const getAllCategory = asyncHandler(async (req, res) => {
 // @access private
 const createCategory = asyncHandler(async (req, res) => {
    try {
-      const { branchId, branchName } = req.body;
+      const { branchId, branchName, establish } = req.body;
       // confirm data
-      if (!branchId || !branchName) {
+      if (!branchId || !branchName || !establish) {
          return res.status(404).json({ message: "All fields are required" });
       }
       // check for duplicate
@@ -49,6 +49,7 @@ const createCategory = asyncHandler(async (req, res) => {
       const categoryObject = {
          branchId: branchId,
          branchName: branchName,
+         establish: establish,
          createdAt: new Date(),
          updatedAt: new Date(),
       };
@@ -73,7 +74,7 @@ const createCategory = asyncHandler(async (req, res) => {
 // @access private
 const updateCategory = asyncHandler(async (req, res) => {
    try {
-      const { id, branchName } = req.body;
+      const { id, branchName, establish } = req.body;
       // get category by id
       const category = await Branch.findById(id).lean().exec();
       if (!category) {
@@ -93,6 +94,7 @@ const updateCategory = asyncHandler(async (req, res) => {
          },
          {
             branchName: branchName,
+            establish: establish || category.establish,
             updatedAt: new Date(),
          }
       );
@@ -169,6 +171,23 @@ const getBranchPaginate = asyncHandler(async (req, res) => {
    }
 });
 
+const insertManyDocuments = asyncHandler(async (req, res) => {
+   try {
+      const { documents } = req.body;
+      if (!documents || !documents.length) {
+         return res.status(404).json({ message: "List document is required" });
+      }
+      const options = { ordered: true };
+      const result = await Branch.insertMany(documents, options);
+      return res.status(201).json({
+         message: `${result.length} documents were inserted`,
+         data: result,
+      });
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 module.exports = {
    getAllCategory,
    createCategory,
@@ -176,4 +195,5 @@ module.exports = {
    deleteCategory,
    getCategoryById,
    getBranchPaginate,
+   insertManyDocuments,
 };

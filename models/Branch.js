@@ -11,7 +11,7 @@ const branchSchema = new mongoose.Schema(
          require: true,
       },
       establish: {
-         type: Date,
+         type: String,
          require: true,
       },
    },
