@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const cardSchema = new mongoose.Schema(
+const cartSchema = new mongoose.Schema(
    {
       userId: {
          type: String,
@@ -28,4 +28,21 @@ const cardSchema = new mongoose.Schema(
    }
 );
 
-module.exports = mongoose.model("cart", cardSchema);
+cartSchema.set("toObject", { virtuals: true });
+cartSchema.set("toJSON", { virtuals: true });
+
+cartSchema.virtual("product", {
+   ref: "product",
+   localField: "productId",
+   foreignField: "_id",
+   justOne: true,
+});
+
+cartSchema.virtual("user", {
+   ref: "user",
+   localField: "userId",
+   foreignField: "_id",
+   justOne: true,
+});
+
+module.exports = mongoose.model("cart", cartSchema);

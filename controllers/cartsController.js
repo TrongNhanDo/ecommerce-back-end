@@ -3,13 +3,17 @@ const Cart = require("../models/Cart");
 
 const getCartList = asyncHandler(async (req, res) => {
    try {
-      const cartList = await Cart.find().sort({ createdAt: 1 }).lean();
+      const cartList = await Cart.find()
+         .populate(["product", "user"])
+         .sort({ createdAt: 1 })
+         .lean();
       console.log(cartList);
       if (!cartList || !cartList.length) {
          return res.status(400).json({ message: "No cart found" });
       }
       return res.json(cartList);
    } catch (error) {
+      console.log({ error });
       return res.status(400).json({ error, message: "Server's error" });
    }
 });
@@ -17,19 +21,37 @@ const getCartList = asyncHandler(async (req, res) => {
 const handleCart = asyncHandler(async (req, res) => {
    try {
       const { userId, productId, price, amount } = req.body;
+      console.log({ userId, productId, price, amount });
       // confirm data
       if (!userId || !productId || !price || !amount) {
          return res.status(404).json({ message: "All fields are required" });
       }
       // check for duplicate
-      const duplicate = await Cart.find({ userId: userId }).lean().exec();
-      if (duplicate && duplicate.length) {
-         // to to
-         return res.json({
-            message: "update function",
-         });
+      const duplicate = await Cart.findOne({
+         userId: userId,
+         productId: productId,
+      })
+         .lean()
+         .exec();
+      if (duplicate) {
+         const newAmount = parseFloat(duplicate.amount) + parseFloat(amount);
+         const updateCart = await Cart.updateOne(
+            {
+               userId: userId,
+               productId: productId,
+            },
+            {
+               amount: newAmount,
+               price: price,
+               total: newAmount * price,
+               updatedAt: new Date(),
+            }
+         );
+         if (updateCart) {
+            return res.json({ message: `Cart has been updated` });
+         }
+         return res.json({ message: "Update Cart fail" });
       } else {
-         console.log("add");
          const cartObject = {
             userId: userId,
             productId: productId,
