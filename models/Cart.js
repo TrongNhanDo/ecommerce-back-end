@@ -10,12 +10,16 @@ const cardSchema = new mongoose.Schema(
          type: String,
          require: true,
       },
+      price: {
+         type: String,
+         required: true,
+      },
       amount: {
          type: Number,
          require: true,
       },
       total: {
-         type: Number,
+         type: String,
          default: 0,
       },
    },

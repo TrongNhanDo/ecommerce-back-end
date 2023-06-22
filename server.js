@@ -38,6 +38,8 @@ app.use("/skills", require("./route/skillRoutes"));
 app.use("/products", require("./route/productRoutes"));
 // route for roles
 app.use("/roles", require("./route/roleRoutes"));
+// route for carts
+app.use("/carts", require("./route/cartRoutes"));
 
 app.all("*", (req, res) => {
    res.status(404);
