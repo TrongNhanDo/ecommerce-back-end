@@ -7,13 +7,11 @@ const getCartList = asyncHandler(async (req, res) => {
          .populate(["product", "user"])
          .sort({ createdAt: 1 })
          .lean();
-      console.log(cartList);
       if (!cartList || !cartList.length) {
          return res.status(400).json({ message: "No cart found" });
       }
       return res.json(cartList);
    } catch (error) {
-      console.log({ error });
       return res.status(400).json({ error, message: "Server's error" });
    }
 });
@@ -21,7 +19,6 @@ const getCartList = asyncHandler(async (req, res) => {
 const handleCart = asyncHandler(async (req, res) => {
    try {
       const { userId, productId, price, amount } = req.body;
-      console.log({ userId, productId, price, amount });
       // confirm data
       if (!userId || !productId || !price || !amount) {
          return res.status(404).json({ message: "All fields are required" });
