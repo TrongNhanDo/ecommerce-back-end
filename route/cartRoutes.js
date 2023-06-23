@@ -7,4 +7,6 @@ router
    .get(cartsController.getCartList)
    .post(cartsController.handleCart);
 
+router.route("/get-by-userId/").post(cartsController.getCartListByUserId);
+
 module.exports = router;

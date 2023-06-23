@@ -16,6 +16,37 @@ const getCartList = asyncHandler(async (req, res) => {
    }
 });
 
+const getCartListByUserId = asyncHandler(async (req, res) => {
+   try {
+      const { userId } = req.body;
+      const cartList = await Cart.find({ userId: userId })
+         .populate([
+            {
+               path: "product",
+               populate: [
+                  { path: "branch" },
+                  { path: "age" },
+                  { path: "skill" },
+               ],
+            },
+            {
+               path: "user",
+               populate: { path: "role" },
+            },
+         ])
+         .sort({ createdAt: 1 })
+         .lean();
+
+      console.log({ cartList });
+      if (!cartList || !cartList.length) {
+         return res.status(400).json({ message: "No cart found" });
+      }
+      return res.json(cartList);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 const handleCart = asyncHandler(async (req, res) => {
    try {
       const { userId, productId, price, amount } = req.body;
@@ -76,4 +107,5 @@ const handleCart = asyncHandler(async (req, res) => {
 module.exports = {
    getCartList,
    handleCart,
+   getCartListByUserId,
 };
