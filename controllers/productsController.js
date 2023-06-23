@@ -246,8 +246,12 @@ const getProductBySkillId = asyncHandler(async (req, res) => {
 
 const getProductPaginate = asyncHandler(async (req, res) => {
    try {
-      const { perPage, page } = req.body;
-      const products = await Product.find()
+      // get params from request's body
+      const { perPage, page, ageId, branchId, skillId } = req.body;
+      // format searchObject
+      const searchObject = getObjectSearchProduct(ageId, branchId, skillId);
+      // get products list
+      const products = await Product.find(searchObject)
          .sort({ createdAt: 1 })
          .populate(["age", "branch", "skill"])
          .skip(perPage * (page || 1) - perPage)
@@ -267,6 +271,20 @@ const getProductPaginate = asyncHandler(async (req, res) => {
       return res.status(400).json({ error, message: "Server's error" });
    }
 });
+
+const getObjectSearchProduct = (ageId, branchId, skillId) => {
+   const list = {};
+   if (ageId) {
+      list.ageId = ageId;
+   }
+   if (branchId) {
+      list.branchId = branchId;
+   }
+   if (skillId) {
+      list.skillId = skillId;
+   }
+   return list;
+};
 
 const insertManyDocuments = asyncHandler(async (req, res) => {
    try {
