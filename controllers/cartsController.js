@@ -104,8 +104,32 @@ const handleCart = asyncHandler(async (req, res) => {
    }
 });
 
+const deleteCart = asyncHandler(async (req, res) => {
+   try {
+      const { id } = req.body;
+      if (!id) {
+         return res.status(404).json({ message: "Cart ID is required" });
+      }
+      const cartTarget = await Cart.findById(id).exec();
+      if (!cartTarget) {
+         return res.status(400).json({ message: "Cart not found" });
+      }
+      const result = await cartTarget.deleteOne();
+      if (result) {
+         return res.status(201).json({
+            message: `Cart has been deleted`,
+         });
+      } else {
+         return res.status(401).json({ message: "Delete cart failed" });
+      }
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 module.exports = {
    getCartList,
    handleCart,
    getCartListByUserId,
+   deleteCart,
 };
