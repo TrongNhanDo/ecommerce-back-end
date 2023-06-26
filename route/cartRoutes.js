@@ -9,5 +9,6 @@ router
    .delete(cartsController.deleteCart);
 
 router.route("/get-by-userId/").post(cartsController.getCartListByUserId);
+router.route("/update-cart/").post(cartsController.updateCart);
 
 module.exports = router;

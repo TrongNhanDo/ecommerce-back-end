@@ -104,6 +104,43 @@ const handleCart = asyncHandler(async (req, res) => {
    }
 });
 
+const updateCart = asyncHandler(async (req, res) => {
+   try {
+      const { userId, cartItem } = req.body;
+      const checkRequire =
+         cartItem &&
+         cartItem.length &&
+         cartItem.every(
+            (value) => value.productId && value.amount && value.price
+         );
+      if (userId && checkRequire) {
+         cartItem.map(async (value) => {
+            await Cart.updateOne(
+               {
+                  userId: userId,
+                  productId: value.productId,
+               },
+               {
+                  amount: value.amount,
+                  price: value.price,
+                  total:
+                     parseFloat(value.amount || 0) *
+                     parseFloat(value.price || 0),
+                  updatedAt: new Date(),
+               }
+            );
+         });
+         return res.status(201).json({
+            message: `Updated cart success`,
+         });
+      } else {
+         return res.status(404).json({ message: "All fields are required" });
+      }
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 const deleteCart = asyncHandler(async (req, res) => {
    try {
       const { id } = req.body;
@@ -132,4 +169,5 @@ module.exports = {
    handleCart,
    getCartListByUserId,
    deleteCart,
+   updateCart,
 };
