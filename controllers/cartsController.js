@@ -8,7 +8,7 @@ const getCartList = asyncHandler(async (req, res) => {
          .sort({ createdAt: 1 })
          .lean();
       if (!cartList || !cartList.length) {
-         return res.status(400).json({ message: "No cart found" });
+         return res.json({ message: "No cart found" });
       }
       return res.json(cartList);
    } catch (error) {
@@ -37,9 +37,8 @@ const getCartListByUserId = asyncHandler(async (req, res) => {
          .sort({ createdAt: 1 })
          .lean();
 
-      console.log({ cartList });
       if (!cartList || !cartList.length) {
-         return res.status(400).json({ message: "No cart found" });
+         return res.json({ message: "No cart found" });
       }
       return res.json(cartList);
    } catch (error) {
