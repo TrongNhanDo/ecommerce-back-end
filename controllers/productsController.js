@@ -247,9 +247,14 @@ const getProductBySkillId = asyncHandler(async (req, res) => {
 const getProductPaginate = asyncHandler(async (req, res) => {
    try {
       // get params from request's body
-      const { perPage, page, ageId, branchId, skillId } = req.body;
+      const { perPage, page, ageId, branchId, skillId, productName } = req.body;
       // format searchObject
-      const searchObject = getObjectSearchProduct(ageId, branchId, skillId);
+      const searchObject = getObjectSearchProduct(
+         ageId,
+         branchId,
+         skillId,
+         productName
+      );
       // get products list
       const products = await Product.find(searchObject)
          .sort({ createdAt: 1 })
@@ -272,7 +277,7 @@ const getProductPaginate = asyncHandler(async (req, res) => {
    }
 });
 
-const getObjectSearchProduct = (ageId, branchId, skillId) => {
+const getObjectSearchProduct = (ageId, branchId, skillId, productName) => {
    const list = {};
    if (ageId) {
       list.ageId = ageId;
@@ -282,6 +287,9 @@ const getObjectSearchProduct = (ageId, branchId, skillId) => {
    }
    if (skillId) {
       list.skillId = skillId;
+   }
+   if (productName) {
+      list.productName = productName;
    }
    return list;
 };
