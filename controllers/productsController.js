@@ -289,7 +289,10 @@ const getObjectSearchProduct = (ageId, branchId, skillId, productName) => {
       list.skillId = skillId;
    }
    if (productName) {
-      list.productName = productName;
+      list.productName = {
+         $regex: productName,
+         $options: "i",
+      };
    }
    return list;
 };
