@@ -26,20 +26,30 @@ app.use(cookieParser());
 app.use("/", express.static(path.join(__dirname, "public")));
 
 app.use("/", require("./route/root"));
+
 // route for users
 app.use("/users", require("./route/userRoutes"));
+
 // route for ages
 app.use("/ages", require("./route/ageRoutes"));
+
 // route for branches
 app.use("/branches", require("./route/branchRoutes"));
+
 // route for skills
 app.use("/skills", require("./route/skillRoutes"));
+
 // route for products
 app.use("/products", require("./route/productRoutes"));
+
 // route for roles
 app.use("/roles", require("./route/roleRoutes"));
+
 // route for carts
 app.use("/carts", require("./route/cartRoutes"));
+
+// route for mails
+app.use("/mails", require("./route/mailRoutes"));
 
 app.all("*", (req, res) => {
    res.status(404);
