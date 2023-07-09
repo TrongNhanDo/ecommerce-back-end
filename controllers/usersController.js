@@ -20,7 +20,7 @@ const getAllUser = asyncHandler(async (req, res) => {
    }
 });
 
-// login
+// login for user
 const loginUser = asyncHandler(async (req, res) => {
    try {
       const { username, password } = req.body;
@@ -29,7 +29,37 @@ const loginUser = asyncHandler(async (req, res) => {
             .status(400)
             .json({ message: "Username and password are required" });
       }
-      const user = await User.findOne({ username, password })
+      const user = await User.findOne({ username, password, roleId: 1 })
+         .populate(["role"])
+         .select("-password")
+         .lean()
+         .exec();
+      if (!user) {
+         return res
+            .status(401)
+            .json({ message: "Username or password incorrect" });
+      } else {
+         return res.status(200).json(user);
+      }
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
+// login for admin, ...
+const loginAdmin = asyncHandler(async (req, res) => {
+   try {
+      const { username, password } = req.body;
+      if (!username || !password) {
+         return res
+            .status(400)
+            .json({ message: "Username and password are required" });
+      }
+      const user = await User.findOne({
+         username,
+         password,
+         roleId: { $in: [2, 3, 4, 5] },
+      })
          .populate(["role"])
          .select("-password")
          .lean()
@@ -248,4 +278,5 @@ module.exports = {
    getSortedData,
    getUserPaginate,
    insertManyDocuments,
+   loginAdmin,
 };
