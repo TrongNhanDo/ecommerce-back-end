@@ -1,5 +1,5 @@
-const asyncHandler = require("express-async-handler");
-const Age = require("../models/Age");
+const asyncHandler = require('express-async-handler');
+const Age = require('../models/Age');
 
 // @desc get all categories
 // @route GET /categories
@@ -8,7 +8,7 @@ const getAllCategory = asyncHandler(async (req, res) => {
    try {
       const categories = await Age.find().sort({ ageId: 1 }).lean();
       if (!categories || !categories.length) {
-         return res.status(400).json({ message: "No category found" });
+         return res.status(400).json({ message: 'No category found' });
       }
       return res.json(categories);
    } catch (error) {
@@ -23,8 +23,8 @@ const createCategory = asyncHandler(async (req, res) => {
    try {
       const { ageId, ageName } = req.body;
       // confirm data
-      if (!ageId || ageId === "0" || !ageName) {
-         return res.status(404).json({ message: "All fields are required" });
+      if (!ageId || ageId === '0' || !ageName) {
+         return res.status(404).json({ message: 'All fields are required' });
       }
       // check for duplicate
       const duplicate = await Age.find({
@@ -36,14 +36,14 @@ const createCategory = asyncHandler(async (req, res) => {
       if (duplicate && duplicate.length) {
          const arrayError = [];
          if (duplicate.some((value) => value.ageId == ageId)) {
-            arrayError.push("ageId");
+            arrayError.push('ageId');
          }
          if (duplicate.some((value) => value.ageName === ageName)) {
-            arrayError.push("ageName");
+            arrayError.push('ageName');
          }
          return res
             .status(409)
-            .json({ message: `${arrayError.join(", ")} already existed` });
+            .json({ message: `${arrayError.join(', ')} already existed` });
       }
       // confirm data
       const categoryObject = {
@@ -61,7 +61,7 @@ const createCategory = asyncHandler(async (req, res) => {
          });
       }
       return res.status(400).json({
-         message: "Invalid category data received",
+         message: 'Invalid category data received',
       });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -77,7 +77,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       // get user by id
       const category = await Age.findById(id).lean().exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       // check for duplicate
       const duplicate = await Age.findOne({ ageName }).lean().exec();
@@ -99,7 +99,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       if (updateCategory) {
          return res.json({ message: `Category has been updated` });
       }
-      return res.json({ message: "Update category fail" });
+      return res.json({ message: 'Update category fail' });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
    }
@@ -112,11 +112,11 @@ const deleteCategory = asyncHandler(async (req, res) => {
    try {
       const { id } = req.body;
       if (!id) {
-         return res.status(404).json({ message: "Category ID is required" });
+         return res.status(404).json({ message: 'Category ID is required' });
       }
       const category = await Age.findById(id).exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       const result = await category.deleteOne();
       return res.status(201).json({
@@ -132,11 +132,11 @@ const getCategoryById = asyncHandler(async (req, res) => {
    try {
       const { id } = req.params;
       if (!id) {
-         return res.status(404).json({ message: "Category ID is required" });
+         return res.status(404).json({ message: 'Category ID is required' });
       }
       const category = await Age.findById(id).exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       return res.status(201).json(category);
    } catch (error) {
@@ -154,7 +154,7 @@ const getAgePaginate = asyncHandler(async (req, res) => {
          .exec();
       const count = (await Age.find().exec()).length;
       if (!ages || !ages.length || !count) {
-         return res.status(400).json({ message: "No age category found" });
+         return res.status(400).json({ message: 'No age category found' });
       }
       return res.json({
          count: count || 0,
@@ -171,7 +171,7 @@ const insertManyDocuments = asyncHandler(async (req, res) => {
    try {
       const { documents } = req.body;
       if (!documents || !documents.length) {
-         return res.status(404).json({ message: "List document is required" });
+         return res.status(404).json({ message: 'List document is required' });
       }
       const options = { ordered: true };
       const result = await Age.insertMany(documents, options);

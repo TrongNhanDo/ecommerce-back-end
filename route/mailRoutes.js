@@ -1,9 +1,9 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const mailsController = require("../controllers/mailsController");
+const mailsController = require('../controllers/mailsController');
 
 router
-   .route("/")
+   .route('/')
    .get(mailsController.getAllMails)
    .post(mailsController.insertMail);
 

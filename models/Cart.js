@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const cartSchema = new mongoose.Schema(
    {
@@ -28,21 +28,21 @@ const cartSchema = new mongoose.Schema(
    }
 );
 
-cartSchema.set("toObject", { virtuals: true });
-cartSchema.set("toJSON", { virtuals: true });
+cartSchema.set('toObject', { virtuals: true });
+cartSchema.set('toJSON', { virtuals: true });
 
-cartSchema.virtual("product", {
-   ref: "product",
-   localField: "productId",
-   foreignField: "_id",
+cartSchema.virtual('product', {
+   ref: 'product',
+   localField: 'productId',
+   foreignField: '_id',
    justOne: true,
 });
 
-cartSchema.virtual("user", {
-   ref: "user",
-   localField: "userId",
-   foreignField: "_id",
+cartSchema.virtual('user', {
+   ref: 'user',
+   localField: 'userId',
+   foreignField: '_id',
    justOne: true,
 });
 
-module.exports = mongoose.model("cart", cartSchema);
+module.exports = mongoose.model('cart', cartSchema);

@@ -1,9 +1,9 @@
-const { logEvents } = require("./logger");
+const { logEvents } = require('./logger');
 
 const errorHandler = (err, req, res, next) => {
    logEvents(
       `${err.name}: ${err.message}\t${req.method}\t${req.url}\t${req.header.origin}`,
-      "error.Log"
+      'error.Log'
    );
    console.log(err.stack);
 

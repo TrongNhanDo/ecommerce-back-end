@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const ageSchema = new mongoose.Schema(
    {
@@ -15,4 +15,4 @@ const ageSchema = new mongoose.Schema(
    }
 );
 
-module.exports = mongoose.model("age", ageSchema);
+module.exports = mongoose.model('age', ageSchema);

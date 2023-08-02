@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
    {
@@ -24,15 +24,15 @@ const userSchema = new mongoose.Schema(
    }
 );
 
-userSchema.set("toObject", { virtuals: true });
-userSchema.set("toJSON", { virtuals: true });
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 // role Model
-userSchema.virtual("role", {
-   ref: "role",
-   localField: "roleId",
-   foreignField: "roleId",
+userSchema.virtual('role', {
+   ref: 'role',
+   localField: 'roleId',
+   foreignField: 'roleId',
    justOne: true,
 });
 
-module.exports = mongoose.model("user", userSchema);
+module.exports = mongoose.model('user', userSchema);

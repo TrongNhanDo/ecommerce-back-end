@@ -1,11 +1,11 @@
-const asyncHandler = require("express-async-handler");
-const Role = require("../models/Role");
+const asyncHandler = require('express-async-handler');
+const Role = require('../models/Role');
 
 const getAllRoles = asyncHandler(async (req, res) => {
    try {
       const roles = await Role.find().sort({ roleId: 1 }).lean();
       if (!roles || !roles.length) {
-         return res.status(400).json({ message: "No role found" });
+         return res.status(400).json({ message: 'No role found' });
       }
       return res.json(roles);
    } catch (error) {
@@ -18,7 +18,7 @@ const createRole = asyncHandler(async (req, res) => {
       const { roleId, roleName } = req.body;
       // confirm data
       if (!roleId || roleId == 0 || !roleName) {
-         return res.status(404).json({ message: "All fields are required" });
+         return res.status(404).json({ message: 'All fields are required' });
       }
       // check for duplicate
       const duplicate = await Role.find({
@@ -30,14 +30,14 @@ const createRole = asyncHandler(async (req, res) => {
       if (duplicate && duplicate.length) {
          const arrayError = [];
          if (duplicate.some((value) => value.roleId == roleId)) {
-            arrayError.push("roleId");
+            arrayError.push('roleId');
          }
          if (duplicate.some((value) => value.roleName === roleName)) {
-            arrayError.push("roleName");
+            arrayError.push('roleName');
          }
          return res
             .status(409)
-            .json({ message: `${arrayError.join(", ")} already existed` });
+            .json({ message: `${arrayError.join(', ')} already existed` });
       }
       // confirm data
       const roleObject = {
@@ -55,7 +55,7 @@ const createRole = asyncHandler(async (req, res) => {
          });
       }
       return res.status(400).json({
-         message: "Invalid role data received",
+         message: 'Invalid role data received',
       });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -68,7 +68,7 @@ const updateRole = asyncHandler(async (req, res) => {
       // get user by id
       const role = await Role.findById(id).lean().exec();
       if (!role) {
-         return res.status(400).json({ message: "Role not found" });
+         return res.status(400).json({ message: 'Role not found' });
       }
       // check for duplicate
       const duplicate = await Role.findOne({ roleName }).lean().exec();
@@ -88,7 +88,7 @@ const updateRole = asyncHandler(async (req, res) => {
       if (updateRole) {
          return res.json({ message: `Role has been updated` });
       }
-      return res.json({ message: "Update Role fail" });
+      return res.json({ message: 'Update Role fail' });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
    }
@@ -98,11 +98,11 @@ const deleteRole = asyncHandler(async (req, res) => {
    try {
       const { id } = req.body;
       if (!id) {
-         return res.status(404).json({ message: "Role Id is required" });
+         return res.status(404).json({ message: 'Role Id is required' });
       }
       const role = await Role.findById(id).exec();
       if (!role) {
-         return res.status(400).json({ message: "Role not found" });
+         return res.status(400).json({ message: 'Role not found' });
       }
       const result = await role.deleteOne();
       return res.status(201).json({
@@ -117,11 +117,11 @@ const getRoleById = asyncHandler(async (req, res) => {
    try {
       const { id } = req.params;
       if (!id) {
-         return res.status(404).json({ message: "Role Id is required" });
+         return res.status(404).json({ message: 'Role Id is required' });
       }
       const role = await Role.findById(id).exec();
       if (!role) {
-         return res.status(400).json({ message: "Role not found" });
+         return res.status(400).json({ message: 'Role not found' });
       }
       return res.status(201).json(role);
    } catch (error) {
@@ -139,7 +139,7 @@ const getRolePaginate = asyncHandler(async (req, res) => {
          .exec();
       const count = (await Role.find().exec()).length;
       if (!roles || !roles.length || !count) {
-         return res.status(400).json({ message: "No role found" });
+         return res.status(400).json({ message: 'No role found' });
       }
       return res.json({
          count: count || 0,
@@ -156,7 +156,7 @@ const insertManyDocuments = asyncHandler(async (req, res) => {
    try {
       const { documents } = req.body;
       if (!documents || !documents.length) {
-         return res.status(404).json({ message: "List document is required" });
+         return res.status(404).json({ message: 'List document is required' });
       }
       const options = { ordered: true };
       const result = await Role.insertMany(documents, options);

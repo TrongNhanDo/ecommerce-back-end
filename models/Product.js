@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema(
    {
@@ -50,29 +50,29 @@ const productSchema = new mongoose.Schema(
    }
 );
 
-productSchema.set("toObject", { virtuals: true });
-productSchema.set("toJSON", { virtuals: true });
+productSchema.set('toObject', { virtuals: true });
+productSchema.set('toJSON', { virtuals: true });
 
 // age Model
-productSchema.virtual("age", {
-   ref: "age",
-   localField: "ageId",
-   foreignField: "ageId",
+productSchema.virtual('age', {
+   ref: 'age',
+   localField: 'ageId',
+   foreignField: 'ageId',
    justOne: true,
 });
 // branch Model
-productSchema.virtual("branch", {
-   ref: "branch",
-   localField: "branchId",
-   foreignField: "branchId",
+productSchema.virtual('branch', {
+   ref: 'branch',
+   localField: 'branchId',
+   foreignField: 'branchId',
    justOne: true,
 });
 // skill Model
-productSchema.virtual("skill", {
-   ref: "skill",
-   localField: "skillId",
-   foreignField: "skillId",
+productSchema.virtual('skill', {
+   ref: 'skill',
+   localField: 'skillId',
+   foreignField: 'skillId',
    justOne: true,
 });
 
-module.exports = mongoose.model("product", productSchema);
+module.exports = mongoose.model('product', productSchema);

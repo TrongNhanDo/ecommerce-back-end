@@ -1,5 +1,5 @@
-const asyncHandler = require("express-async-handler");
-const User = require("../models/User");
+const asyncHandler = require('express-async-handler');
+const User = require('../models/User');
 
 // @desc get all users
 // @route GET /users
@@ -7,12 +7,12 @@ const User = require("../models/User");
 const getAllUser = asyncHandler(async (req, res) => {
    try {
       const users = await User.find()
-         .populate(["role"])
+         .populate(['role'])
          .sort({ createdAt: 1 })
-         .select("-password")
+         .select('-password')
          .lean();
       if (!users || !users.length) {
-         return res.status(400).json({ message: "No users found" });
+         return res.status(400).json({ message: 'No users found' });
       }
       return res.json(users);
    } catch (error) {
@@ -27,17 +27,17 @@ const loginUser = asyncHandler(async (req, res) => {
       if (!username || !password) {
          return res
             .status(400)
-            .json({ message: "Username and password are required" });
+            .json({ message: 'Username and password are required' });
       }
       const user = await User.findOne({ username, password, roleId: 1 })
-         .populate(["role"])
-         .select("-password")
+         .populate(['role'])
+         .select('-password')
          .lean()
          .exec();
       if (!user) {
          return res
             .status(401)
-            .json({ message: "Username or password incorrect" });
+            .json({ message: 'Username or password incorrect' });
       } else {
          return res.status(200).json(user);
       }
@@ -53,21 +53,21 @@ const loginAdmin = asyncHandler(async (req, res) => {
       if (!username || !password) {
          return res
             .status(400)
-            .json({ message: "Username and password are required" });
+            .json({ message: 'Username and password are required' });
       }
       const user = await User.findOne({
          username,
          password,
          roleId: { $in: [2, 3, 4, 5] },
       })
-         .populate(["role"])
-         .select("-password")
+         .populate(['role'])
+         .select('-password')
          .lean()
          .exec();
       if (!user) {
          return res
             .status(401)
-            .json({ message: "Username or password incorrect" });
+            .json({ message: 'Username or password incorrect' });
       } else {
          return res.status(200).json(user);
       }
@@ -85,7 +85,7 @@ const createUser = asyncHandler(async (req, res) => {
       const { username, password, roleId, active } = req.body;
       // confirm data
       if (!username && !password) {
-         return res.status(404).json({ message: "All fields are required" });
+         return res.status(404).json({ message: 'All fields are required' });
       }
       // check for duplicate
       const duplicate = await User.findOne({ username }).lean().exec();
@@ -108,7 +108,7 @@ const createUser = asyncHandler(async (req, res) => {
          });
       } else {
          return res.status(400).json({
-            message: "Invalid user data received",
+            message: 'Invalid user data received',
          });
       }
    } catch (error) {
@@ -122,13 +122,13 @@ const createUser = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
    try {
       const { id, username, roleId, active, password } = req.body;
-      if (!id || id === "" || id === undefined) {
-         return res.status(400).json({ message: "User Id not found" });
+      if (!id || id === '' || id === undefined) {
+         return res.status(400).json({ message: 'User Id not found' });
       }
       // get user by id
       const user = await User.findById(id).exec();
       if (!user) {
-         return res.status(400).json({ message: "User not found" });
+         return res.status(400).json({ message: 'User not found' });
       }
       // check for duplicate
       const duplicate = await User.findOne({ username }).lean().exec();
@@ -153,9 +153,9 @@ const updateUser = asyncHandler(async (req, res) => {
       if (updateUser) {
          return res
             .status(201)
-            .json({ updateUser, message: "Account has been updated" });
+            .json({ updateUser, message: 'Account has been updated' });
       } else {
-         return res.status(400).json({ message: "Update user fail" });
+         return res.status(400).json({ message: 'Update user fail' });
       }
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -169,11 +169,11 @@ const deleteUser = asyncHandler(async (req, res) => {
    try {
       const { id } = req.body;
       if (!id) {
-         return res.status(404).json({ message: "User ID is required" });
+         return res.status(404).json({ message: 'User ID is required' });
       }
       const user = await User.findById(id).exec();
       if (!user) {
-         return res.status(400).json({ message: "User not found" });
+         return res.status(400).json({ message: 'User not found' });
       }
       const result = await user.deleteOne();
       return res.status(201).json({
@@ -189,15 +189,15 @@ const getUserById = asyncHandler(async (req, res) => {
    try {
       const { id } = req.params;
       if (!id) {
-         return res.status(404).json({ message: "User ID is required" });
+         return res.status(404).json({ message: 'User ID is required' });
       }
       const user = await User.findById(id)
-         .select("-password")
-         .populate(["role"])
+         .select('-password')
+         .populate(['role'])
          .lean()
          .exec();
       if (!user) {
-         return res.status(400).json({ message: "User not found" });
+         return res.status(400).json({ message: 'User not found' });
       }
       return res.status(201).json(user);
    } catch (error) {
@@ -212,12 +212,12 @@ const getSortedData = asyncHandler(async (req, res) => {
          [column]: condition,
       };
       const users = await User.find()
-         .populate(["role"])
+         .populate(['role'])
          .sort(sortOptions)
-         .select("-password")
+         .select('-password')
          .lean();
       if (!users || !users.length) {
-         return res.status(400).json({ message: "No users found" });
+         return res.status(400).json({ message: 'No users found' });
       }
       return res.json(users);
    } catch (error) {
@@ -229,8 +229,8 @@ const getUserPaginate = asyncHandler(async (req, res) => {
    try {
       const { perPage, page } = req.body;
       const users = await User.find()
-         .populate(["role"])
-         .select("-password")
+         .populate(['role'])
+         .select('-password')
          .sort({ createdAt: 1 })
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
@@ -238,7 +238,7 @@ const getUserPaginate = asyncHandler(async (req, res) => {
          .exec();
       const count = (await User.find().exec()).length;
       if (!users || !users.length || !count) {
-         return res.status(400).json({ message: "No users found" });
+         return res.status(400).json({ message: 'No users found' });
       }
       return res.json({
          count: count || 0,
@@ -255,7 +255,7 @@ const insertManyDocuments = asyncHandler(async (req, res) => {
    try {
       const { documents } = req.body;
       if (!documents || !documents.length) {
-         return res.status(404).json({ message: "List document is required" });
+         return res.status(404).json({ message: 'List document is required' });
       }
       const options = { ordered: true };
       const result = await User.insertMany(documents, options);

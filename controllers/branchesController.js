@@ -1,5 +1,5 @@
-const asyncHandler = require("express-async-handler");
-const Branch = require("../models/Branch");
+const asyncHandler = require('express-async-handler');
+const Branch = require('../models/Branch');
 
 // @desc get all categories
 // @route GET /categories
@@ -8,7 +8,7 @@ const getAllCategory = asyncHandler(async (req, res) => {
    try {
       const categories = await Branch.find().sort({ branchId: 1 }).lean();
       if (!categories || !categories.length) {
-         return res.status(400).json({ message: "No category found" });
+         return res.status(400).json({ message: 'No category found' });
       }
       return res.json(categories);
    } catch (error) {
@@ -24,7 +24,7 @@ const createCategory = asyncHandler(async (req, res) => {
       const { branchId, branchName, establish } = req.body;
       // confirm data
       if (!branchId || !branchName || !establish) {
-         return res.status(404).json({ message: "All fields are required" });
+         return res.status(404).json({ message: 'All fields are required' });
       }
       // check for duplicate
       const duplicate = await Branch.find({
@@ -36,14 +36,14 @@ const createCategory = asyncHandler(async (req, res) => {
       if (duplicate && duplicate.length) {
          const arrayError = [];
          if (duplicate.some((value) => value.branchId == branchId)) {
-            arrayError.push("branchId");
+            arrayError.push('branchId');
          }
          if (duplicate.some((value) => value.branchName === branchName)) {
-            arrayError.push("branchName");
+            arrayError.push('branchName');
          }
          return res
             .status(409)
-            .json({ message: `${arrayError.join(", ")} already existed` });
+            .json({ message: `${arrayError.join(', ')} already existed` });
       }
       // confirm data
       const categoryObject = {
@@ -62,7 +62,7 @@ const createCategory = asyncHandler(async (req, res) => {
          });
       }
       return res.status(400).json({
-         message: "Invalid category data received",
+         message: 'Invalid category data received',
       });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -78,7 +78,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       // get category by id
       const category = await Branch.findById(id).lean().exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       // check for duplicate
       const duplicate = await Branch.findOne({ branchName }).lean().exec();
@@ -101,7 +101,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       if (updateCategory) {
          return res.json({ message: `Category has been updated` });
       } else {
-         return res.json({ message: "Update category fail" });
+         return res.json({ message: 'Update category fail' });
       }
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -115,12 +115,12 @@ const deleteCategory = asyncHandler(async (req, res) => {
    try {
       const { id } = req.body;
       if (!id) {
-         return res.status(404).json({ message: "Category ID is required" });
+         return res.status(404).json({ message: 'Category ID is required' });
       }
 
       const category = await Branch.findById(id).exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       const result = await category.deleteOne();
       return res.status(201).json({
@@ -136,11 +136,11 @@ const getCategoryById = asyncHandler(async (req, res) => {
    try {
       const { id } = req.params;
       if (!id) {
-         return res.status(404).json({ message: "Category ID is required" });
+         return res.status(404).json({ message: 'Category ID is required' });
       }
       const category = await Branch.findById(id).exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       return res.status(201).json(category);
    } catch (error) {
@@ -158,7 +158,7 @@ const getBranchPaginate = asyncHandler(async (req, res) => {
          .exec();
       const count = (await Branch.find().exec()).length;
       if (!branches || !branches.length || !count) {
-         return res.status(400).json({ message: "No branch category found" });
+         return res.status(400).json({ message: 'No branch category found' });
       }
       return res.json({
          count: count || 0,
@@ -175,7 +175,7 @@ const insertManyDocuments = asyncHandler(async (req, res) => {
    try {
       const { documents } = req.body;
       if (!documents || !documents.length) {
-         return res.status(404).json({ message: "List document is required" });
+         return res.status(404).json({ message: 'List document is required' });
       }
       const options = { ordered: true };
       const result = await Branch.insertMany(documents, options);

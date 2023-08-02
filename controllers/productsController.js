@@ -1,15 +1,15 @@
-const asyncHandler = require("express-async-handler");
-const Product = require("../models/Product");
+const asyncHandler = require('express-async-handler');
+const Product = require('../models/Product');
 
 // get all products
 const getAllProduct = asyncHandler(async (req, res) => {
    try {
       const products = await Product.find()
-         .populate(["age", "branch", "skill"])
+         .populate(['age', 'branch', 'skill'])
          .sort({ createdAt: 1 })
          .lean();
       if (!products || !products.length) {
-         return res.json({ message: "No product found" });
+         return res.json({ message: 'No product found' });
       }
       return res.json(products);
    } catch (error) {
@@ -42,8 +42,8 @@ const insertNewProduct = asyncHandler(async (req, res) => {
          images,
       ];
       // confirm data
-      if (inputArray.some((value) => !value || value === "")) {
-         return res.status(404).json({ message: "All fields are required" });
+      if (inputArray.some((value) => !value || value === '')) {
+         return res.status(404).json({ message: 'All fields are required' });
       }
       // check for duplicate
       const duplicate = await Product.findOne({ productName }).lean().exec();
@@ -72,7 +72,7 @@ const insertNewProduct = asyncHandler(async (req, res) => {
          });
       } else {
          return res.status(400).json({
-            message: "Invalid product data received",
+            message: 'Invalid product data received',
          });
       }
    } catch (error) {
@@ -107,11 +107,11 @@ const updateProduct = asyncHandler(async (req, res) => {
       ];
       const product = await Product.findById(productId).exec();
       if (!product) {
-         return res.status(400).json({ message: "Product not found" });
+         return res.status(400).json({ message: 'Product not found' });
       }
       // get user by id
-      if (inputArray.some((value) => !value || value === "")) {
-         return res.status(404).json({ message: "All fields are required" });
+      if (inputArray.some((value) => !value || value === '')) {
+         return res.status(404).json({ message: 'All fields are required' });
       }
       // check for duplicate
       const duplicate = await Product.findOne({ productName }).lean().exec();
@@ -141,7 +141,7 @@ const updateProduct = asyncHandler(async (req, res) => {
             message: `${product.productName} has been updated`,
          });
       } else {
-         return res.status(400).json({ message: "Update product fail" });
+         return res.status(400).json({ message: 'Update product fail' });
       }
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -153,11 +153,11 @@ const deleteProduct = asyncHandler(async (req, res) => {
    try {
       const { productId } = req.body;
       if (!productId) {
-         return res.status(404).json({ message: "Product ID is required" });
+         return res.status(404).json({ message: 'Product ID is required' });
       }
       const product = await Product.findById(productId).exec();
       if (!product) {
-         return res.status(400).json({ message: "User not found" });
+         return res.status(400).json({ message: 'User not found' });
       }
       const result = await product.deleteOne();
       return res.status(201).json({
@@ -173,13 +173,13 @@ const getProductById = asyncHandler(async (req, res) => {
    try {
       const { productId } = req.params;
       if (!productId) {
-         return res.status(404).json({ message: "Product ID is required" });
+         return res.status(404).json({ message: 'Product ID is required' });
       }
       const product = await Product.findById(productId)
-         .populate(["age", "branch", "skill"])
+         .populate(['age', 'branch', 'skill'])
          .exec();
       if (!product) {
-         return res.status(400).json({ message: "Product not found" });
+         return res.status(400).json({ message: 'Product not found' });
       }
       return res.status(201).json(product);
    } catch (error) {
@@ -192,13 +192,13 @@ const getProductByAgeId = asyncHandler(async (req, res) => {
    try {
       const { ageId } = req.query;
       if (!ageId) {
-         return res.status(404).json({ message: "Age ID is required" });
+         return res.status(404).json({ message: 'Age ID is required' });
       }
       const product = await Product.find({ ageId })
-         .populate(["age", "branch", "skill"])
+         .populate(['age', 'branch', 'skill'])
          .exec();
       if (!product || !product.length) {
-         return res.status(400).json({ message: "Product not found" });
+         return res.status(400).json({ message: 'Product not found' });
       }
       return res.status(201).json(product);
    } catch (error) {
@@ -211,13 +211,13 @@ const getProductByBranchId = asyncHandler(async (req, res) => {
    try {
       const { branchId } = req.query;
       if (!branchId) {
-         return res.status(404).json({ message: "Branch ID is required" });
+         return res.status(404).json({ message: 'Branch ID is required' });
       }
       const product = await Product.find({ branchId })
-         .populate(["age", "branch", "skill"])
+         .populate(['age', 'branch', 'skill'])
          .exec();
       if (!product || !product.length) {
-         return res.status(400).json({ message: "Product not found" });
+         return res.status(400).json({ message: 'Product not found' });
       }
       return res.status(201).json(product);
    } catch (error) {
@@ -230,13 +230,13 @@ const getProductBySkillId = asyncHandler(async (req, res) => {
    try {
       const { skillId } = req.query;
       if (!skillId) {
-         return res.status(404).json({ message: "Skill ID is required" });
+         return res.status(404).json({ message: 'Skill ID is required' });
       }
       const product = await Product.find({ skillId })
-         .populate(["age", "branch", "skill"])
+         .populate(['age', 'branch', 'skill'])
          .exec();
       if (!product || !product.length) {
-         return res.status(400).json({ message: "Product not found" });
+         return res.status(400).json({ message: 'Product not found' });
       }
       return res.status(201).json(product);
    } catch (error) {
@@ -258,13 +258,13 @@ const getProductPaginate = asyncHandler(async (req, res) => {
       // get products list
       const products = await Product.find(searchObject)
          .sort({ createdAt: 1 })
-         .populate(["age", "branch", "skill"])
+         .populate(['age', 'branch', 'skill'])
          .skip(perPage * (page || 1) - perPage)
          .limit(perPage)
          .exec();
       const count = (await Product.find().exec()).length;
       if (!products || !products.length) {
-         return res.json({ message: "No product found" });
+         return res.json({ message: 'No product found' });
       }
       return res.json({
          count: count || 0,
@@ -291,7 +291,7 @@ const getObjectSearchProduct = (ageId, branchId, skillId, productName) => {
    if (productName) {
       list.productName = {
          $regex: productName,
-         $options: "i",
+         $options: 'i',
       };
    }
    return list;
@@ -301,7 +301,7 @@ const insertManyDocuments = asyncHandler(async (req, res) => {
    try {
       const { documents } = req.body;
       if (!documents || !documents.length) {
-         return res.status(404).json({ message: "List document is required" });
+         return res.status(404).json({ message: 'List document is required' });
       }
       const options = { ordered: true };
       const result = await Product.insertMany(documents, options);

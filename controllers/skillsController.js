@@ -1,5 +1,5 @@
-const asyncHandler = require("express-async-handler");
-const Skill = require("../models/Skill");
+const asyncHandler = require('express-async-handler');
+const Skill = require('../models/Skill');
 
 // @desc get all categories
 // @route GET /categories
@@ -8,7 +8,7 @@ const getAllCategory = asyncHandler(async (req, res) => {
    try {
       const categories = await Skill.find().sort({ skillId: 1 }).lean();
       if (!categories || !categories.length) {
-         return res.status(400).json({ message: "No category found" });
+         return res.status(400).json({ message: 'No category found' });
       }
       return res.json(categories);
    } catch (error) {
@@ -24,7 +24,7 @@ const createCategory = asyncHandler(async (req, res) => {
       const { skillId, skillName } = req.body;
       // confirm data
       if (!skillId || !skillName) {
-         return res.status(404).json({ message: "All fields are required" });
+         return res.status(404).json({ message: 'All fields are required' });
       }
       // check for duplicate
       const duplicate = await Skill.find({
@@ -36,14 +36,14 @@ const createCategory = asyncHandler(async (req, res) => {
       if (duplicate && duplicate.length) {
          const arrayError = [];
          if (duplicate.some((value) => value.skillId == skillId)) {
-            arrayError.push("skillId");
+            arrayError.push('skillId');
          }
          if (duplicate.some((value) => value.skillName === skillName)) {
-            arrayError.push("skillName");
+            arrayError.push('skillName');
          }
          return res
             .status(409)
-            .json({ message: `${arrayError.join(", ")} already existed` });
+            .json({ message: `${arrayError.join(', ')} already existed` });
       }
       // confirm data
       const categoryObject = {
@@ -61,7 +61,7 @@ const createCategory = asyncHandler(async (req, res) => {
          });
       }
       return res.status(400).json({
-         message: "Invalid category data received",
+         message: 'Invalid category data received',
       });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -77,7 +77,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       // get user by id
       const category = await Skill.findById(id).lean().exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       // check for duplicate
       const duplicate = await Skill.findOne({ skillName }).lean().exec();
@@ -99,7 +99,7 @@ const updateCategory = asyncHandler(async (req, res) => {
       if (updateCategory) {
          return res.json({ message: `Category has been updated` });
       } else {
-         return res.status(400).json({ message: "Update category fail" });
+         return res.status(400).json({ message: 'Update category fail' });
       }
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -113,12 +113,12 @@ const deleteCategory = asyncHandler(async (req, res) => {
    try {
       const { id } = req.body;
       if (!id) {
-         return res.status(404).json({ message: "Category ID is required" });
+         return res.status(404).json({ message: 'Category ID is required' });
       }
 
       const category = await Skill.findById(id).exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       const result = await category.deleteOne();
       return res.status(201).json({
@@ -134,11 +134,11 @@ const getCategoryById = asyncHandler(async (req, res) => {
    try {
       const { id } = req.params;
       if (!id) {
-         return res.status(404).json({ message: "Category ID is required" });
+         return res.status(404).json({ message: 'Category ID is required' });
       }
       const category = await Skill.findById(id).exec();
       if (!category) {
-         return res.status(400).json({ message: "Category not found" });
+         return res.status(400).json({ message: 'Category not found' });
       }
       return res.status(201).json(category);
    } catch (error) {
@@ -156,7 +156,7 @@ const getSkillPaginate = asyncHandler(async (req, res) => {
          .exec();
       const count = (await Skill.find().exec()).length;
       if (!skills || !skills.length || !count) {
-         return res.status(400).json({ message: "No skill found" });
+         return res.status(400).json({ message: 'No skill found' });
       }
       return res.json({
          count: count || 0,
@@ -173,7 +173,7 @@ const insertManyDocuments = asyncHandler(async (req, res) => {
    try {
       const { documents } = req.body;
       if (!documents || !documents.length) {
-         return res.status(404).json({ message: "List document is required" });
+         return res.status(404).json({ message: 'List document is required' });
       }
       const options = { ordered: true };
       const result = await Skill.insertMany(documents, options);

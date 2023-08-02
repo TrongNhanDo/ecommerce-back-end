@@ -1,14 +1,14 @@
-const asyncHandler = require("express-async-handler");
-const Cart = require("../models/Cart");
+const asyncHandler = require('express-async-handler');
+const Cart = require('../models/Cart');
 
 const getCartList = asyncHandler(async (req, res) => {
    try {
       const cartList = await Cart.find()
-         .populate(["product", "user"])
+         .populate(['product', 'user'])
          .sort({ createdAt: 1 })
          .lean();
       if (!cartList || !cartList.length) {
-         return res.json({ message: "No cart found" });
+         return res.json({ message: 'No cart found' });
       }
       return res.json(cartList);
    } catch (error) {
@@ -22,23 +22,23 @@ const getCartListByUserId = asyncHandler(async (req, res) => {
       const cartList = await Cart.find({ userId: userId })
          .populate([
             {
-               path: "product",
+               path: 'product',
                populate: [
-                  { path: "branch" },
-                  { path: "age" },
-                  { path: "skill" },
+                  { path: 'branch' },
+                  { path: 'age' },
+                  { path: 'skill' },
                ],
             },
             {
-               path: "user",
-               populate: { path: "role" },
+               path: 'user',
+               populate: { path: 'role' },
             },
          ])
          .sort({ createdAt: 1 })
          .lean();
 
       if (!cartList || !cartList.length) {
-         return res.json({ message: "No cart found" });
+         return res.json({ message: 'No cart found' });
       }
       return res.json(cartList);
    } catch (error) {
@@ -51,7 +51,7 @@ const handleCart = asyncHandler(async (req, res) => {
       const { userId, productId, price, amount } = req.body;
       // confirm data
       if (!userId || !productId || !price || !amount) {
-         return res.status(404).json({ message: "All fields are required" });
+         return res.status(404).json({ message: 'All fields are required' });
       }
       // check for duplicate
       const duplicate = await Cart.findOne({
@@ -77,7 +77,7 @@ const handleCart = asyncHandler(async (req, res) => {
          if (updateCart) {
             return res.json({ message: `Cart has been updated` });
          }
-         return res.json({ message: "Update Cart fail" });
+         return res.json({ message: 'Update Cart fail' });
       } else {
          const cartObject = {
             userId: userId,
@@ -95,7 +95,7 @@ const handleCart = asyncHandler(async (req, res) => {
             });
          }
          return res.status(400).json({
-            message: "Invalid data received",
+            message: 'Invalid data received',
          });
       }
    } catch (error) {
@@ -133,7 +133,7 @@ const updateCart = asyncHandler(async (req, res) => {
             message: `Updated cart success`,
          });
       } else {
-         return res.status(404).json({ message: "All fields are required" });
+         return res.status(404).json({ message: 'All fields are required' });
       }
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
@@ -144,11 +144,11 @@ const deleteCart = asyncHandler(async (req, res) => {
    try {
       const { id } = req.body;
       if (!id) {
-         return res.status(404).json({ message: "Cart ID is required" });
+         return res.status(404).json({ message: 'Cart ID is required' });
       }
       const cartTarget = await Cart.findById(id).exec();
       if (!cartTarget) {
-         return res.status(400).json({ message: "Cart not found" });
+         return res.status(400).json({ message: 'Cart not found' });
       }
       const result = await cartTarget.deleteOne();
       if (result) {
@@ -156,7 +156,7 @@ const deleteCart = asyncHandler(async (req, res) => {
             message: `Cart has been deleted`,
          });
       } else {
-         return res.status(401).json({ message: "Delete cart failed" });
+         return res.status(401).json({ message: 'Delete cart failed' });
       }
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
