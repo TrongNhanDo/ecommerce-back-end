@@ -27,28 +27,31 @@ app.use('/', express.static(path.join(__dirname, 'public')));
 
 app.use('/', require('./route/root'));
 
-// route for users
+/** route for users */
 app.use('/users', require('./route/userRoutes'));
 
-// route for ages
+/** route for ages */
 app.use('/ages', require('./route/ageRoutes'));
 
-// route for branches
+/** route for branches */
 app.use('/branches', require('./route/branchRoutes'));
 
-// route for skills
+/** route for skills */
 app.use('/skills', require('./route/skillRoutes'));
 
-// route for products
+/** route for products */
 app.use('/products', require('./route/productRoutes'));
 
-// route for roles
+/** route for roles */
 app.use('/roles', require('./route/roleRoutes'));
 
-// route for carts
+/** route for carts */
 app.use('/carts', require('./route/cartRoutes'));
 
-// route for mails
+/** route for orders */
+app.use('/orders', require('./route/orderRoutes'));
+
+/** route for mails */
 app.use('/mails', require('./route/mailRoutes'));
 
 app.all('*', (req, res) => {
