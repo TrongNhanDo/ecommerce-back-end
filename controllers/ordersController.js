@@ -1,5 +1,6 @@
 const asyncHandler = require('express-async-handler');
 const Order = require('../models/Order');
+const Cart = require('../models/Cart');
 
 const getOrdersList = asyncHandler(async (req, res) => {
    try {
@@ -56,14 +57,19 @@ const createNewOrder = asyncHandler(async (req, res) => {
 
       const product = await Order.create(orderObject);
       if (product) {
-         return res.status(201).json({
-            message: `Order successfully`,
+         const resDelete = await Cart.deleteMany({
+            userId: userId,
          });
-      } else {
-         return res.status(400).json({
-            message: 'Order failed',
-         });
+         if (resDelete) {
+            return res.status(201).json({
+               message: `Order successfully`,
+            });
+         }
       }
+
+      return res.status(400).json({
+         message: 'Order failed',
+      });
    } catch (error) {
       return res.status(400).json({ error, message: "Server's error" });
    }
