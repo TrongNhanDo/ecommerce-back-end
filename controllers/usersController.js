@@ -1,4 +1,5 @@
 const asyncHandler = require('express-async-handler');
+const md5 = require('md5');
 const User = require('../models/User');
 
 // @desc get all users
@@ -29,7 +30,11 @@ const loginUser = asyncHandler(async (req, res) => {
             .status(400)
             .json({ message: 'Username and password are required' });
       }
-      const user = await User.findOne({ username, password, roleId: 1 })
+      const user = await User.findOne({
+         username,
+         password: md5(password),
+         roleId: 1,
+      })
          .populate(['role'])
          .select('-password')
          .lean()
@@ -57,7 +62,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
       }
       const user = await User.findOne({
          username,
-         password,
+         password: md5(password),
          roleId: { $in: [2, 3, 4, 5] },
       })
          .populate(['role'])
@@ -94,7 +99,7 @@ const createUser = asyncHandler(async (req, res) => {
       }
       const userObject = {
          username: username,
-         password: password,
+         password: md5(password),
          roleId: roleId || 1,
          active:
             active !== undefined && typeof active === Boolean ? active : true,
@@ -144,7 +149,7 @@ const updateUser = asyncHandler(async (req, res) => {
          },
          {
             username: username || user.username,
-            password: password || user.password,
+            password: md5(password) || user.password,
             roleId: roleId || user.roleId,
             active: active || user.active,
             updatedAt: new Date(),
