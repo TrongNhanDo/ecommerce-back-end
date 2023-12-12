@@ -54,6 +54,12 @@ app.use('/orders', require('./route/orderRoutes'));
 /** route for mails */
 app.use('/mails', require('./route/mailRoutes'));
 
+app.get('/calendar', (req, res) => {
+   return res.setHeader('Content-type', 'text/plain').statusCode(200).json({
+      message: 'OK',
+   });
+});
+
 app.all('*', (req, res) => {
    res.status(404);
    if (req.accepts('html')) {
