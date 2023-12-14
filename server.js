@@ -55,7 +55,7 @@ app.use('/orders', require('./route/orderRoutes'));
 /** route for mails */
 app.use('/mails', require('./route/mailRoutes'));
 
-app.get('/calendar', async (req, res) => {
+app.post('/calendar', async (req, res) => {
    res.set('Content-Type', 'text/plain');
    res.send(
       req.query.validationToken ||
