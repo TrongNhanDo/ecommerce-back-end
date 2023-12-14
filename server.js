@@ -9,6 +9,7 @@ const { logger, logEvents } = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 // const corsOptions = require("./config/corsOptions");
 const connectDB = require('./config/dbConn.js');
+const tokenHelper = require('./helpers/tokenHelper.js');
 
 const PORT = process.env.PORT || 3500;
 
@@ -54,8 +55,41 @@ app.use('/orders', require('./route/orderRoutes'));
 /** route for mails */
 app.use('/mails', require('./route/mailRoutes'));
 
-app.get('/calendar', (req, res) => {
-   return res.setHeader('Content-type', 'text/plain').send('OK');
+app.get('/calendar', async (req, res) => {
+   if (req.query && req.query.validationToken) {
+      res.set('Content-Type', 'text/plain');
+      res.send(req.query.validationToken);
+      return;
+   }
+
+   // Check for validation tokens, validate them if present
+   let areTokensValid = true;
+   if (req.body.validationTokens) {
+      const appId = process.env.OAUTH_CLIENT_ID;
+      const tenantId = process.env.OAUTH_TENANT_ID;
+      const validationResults = await Promise.all(
+         req.body.validationTokens.map((token) =>
+            tokenHelper.isTokenValid(token, appId, tenantId)
+         )
+      );
+
+      areTokensValid = validationResults.reduce((x, y) => x && y);
+   }
+
+   if (areTokensValid) {
+      for (let i = 0; i < req.body.value.length; i++) {
+         const notification = req.body.value[i];
+
+         // Verify the client state matches the expected value
+         if (
+            notification.clientState == process.env.SUBSCRIPTION_CLIENT_STATE
+         ) {
+            console.log({ notification });
+         }
+      }
+   }
+
+   res.status(202).end();
 });
 
 app.all('*', (req, res) => {
