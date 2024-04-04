@@ -249,6 +249,7 @@ const getProductPaginate = asyncHandler(async (req, res) => {
       // get params from request's body
       const { perPage, page, ageId, branchId, skillId, productName } = req.body;
       // format searchObject
+      const perPageFormat = perPage || 10;
       const searchObject = getObjectSearchProduct(
          ageId,
          branchId,
@@ -259,42 +260,65 @@ const getProductPaginate = asyncHandler(async (req, res) => {
       const products = await Product.find(searchObject)
          .sort({ createdAt: 1 })
          .populate(['age', 'branch', 'skill'])
-         .skip(perPage * (page || 1) - perPage)
-         .limit(perPage)
+         .skip(perPageFormat * (page || 1) - perPageFormat)
+         .limit(perPageFormat)
          .exec();
-      const count = (await Product.find().exec()).length;
+      const count = (await Product.find(searchObject).exec()).length;
       if (!products || !products.length) {
          return res.json({ message: 'No product found' });
       }
       return res.json({
          count: count || 0,
          returnCnt: products.length || 0,
-         totalPage: Math.ceil(count / perPage) || 0,
+         totalPage: Math.ceil(count / perPageFormat) || 0,
          products,
       });
    } catch (error) {
-      return res.status(400).json({ error, message: "Server's error" });
+      return res.status(400).json({
+         error: {
+            message: error.message || '',
+         },
+      });
    }
 });
 
 const getObjectSearchProduct = (ageId, branchId, skillId, productName) => {
-   const list = {};
-   if (ageId) {
-      list.ageId = ageId;
+   const list = [];
+   if (ageId && ageId.length) {
+      list.push({
+         ageId: {
+            $in: ageId || [],
+         },
+      });
    }
-   if (branchId) {
-      list.branchId = branchId;
+   if (branchId && branchId.length) {
+      list.push({
+         branchId: {
+            $in: branchId || [],
+         },
+      });
    }
-   if (skillId) {
-      list.skillId = skillId;
+   if (skillId && skillId.length) {
+      list.push({
+         skillId: {
+            $in: skillId || [],
+         },
+      });
    }
    if (productName) {
-      list.productName = {
-         $regex: productName,
-         $options: 'i',
-      };
+      list.push({
+         productName: {
+            $regex: productName,
+            $options: 'i',
+         },
+      });
    }
-   return list;
+
+   return list.length
+      ? {
+           $or: list,
+        }
+      : {};
 };
 
 const insertManyDocuments = asyncHandler(async (req, res) => {
