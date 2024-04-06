@@ -1,5 +1,7 @@
 const asyncHandler = require('express-async-handler');
+const { validationResult } = require('express-validator');
 const Product = require('../models/Product');
+const { formatErrValidate } = require('../common/utils');
 
 // get all products
 const getAllProduct = asyncHandler(async (req, res) => {
@@ -37,55 +39,43 @@ const getNewestProduct = asyncHandler(async (req, res) => {
 // insert product
 const insertNewProduct = asyncHandler(async (req, res) => {
    try {
-      // get params from request's body
-      const {
-         ageId,
-         branchId,
-         skillId,
-         productName,
-         price,
-         describes,
-         amount,
-         images,
-      } = req.body;
-      const inputArray = [
-         ageId,
-         branchId,
-         skillId,
-         productName,
-         price,
-         describes,
-         amount,
-         images,
-      ];
-      // confirm data
-      if (inputArray.some((value) => !value || value === '')) {
-         return res.status(404).json({ message: 'All fields are required' });
+      // validate input values
+      const errValidate = validationResult(req);
+      if (!errValidate.isEmpty()) {
+         return res.json({
+            errors: formatErrValidate(errValidate.array()),
+            bizResult: '8',
+         });
       }
+
+      const payload = req.body;
       // check for duplicate
-      const duplicate = await Product.findOne({ productName }).lean().exec();
+      const duplicate = await Product.findOne({
+         productName: payload.productName,
+      })
+         .lean()
+         .exec();
       if (duplicate) {
-         return res
-            .status(409)
-            .json({ message: `Product '${productName}' already existed` });
+         return res.status(409).json({
+            message: `Product '${payload.productName}' already existed`,
+         });
       }
-      // hash password
-      const userObject = {
-         ageId: ageId,
-         branchId: branchId,
-         skillId: skillId,
-         productName: productName,
-         price: price,
-         describes: describes,
-         amount: amount,
-         images: images,
-      };
+
       // create and store new user
-      const product = await Product.create(userObject);
+      const product = await Product.create({
+         ageId: payload.ageId,
+         branchId: payload.branchId,
+         skillId: payload.skillId,
+         productName: payload.productName,
+         price: payload.price,
+         describes: payload.describes,
+         amount: payload.amount,
+         images: payload.images,
+      });
       if (product) {
          // created
          return res.status(201).json({
-            message: `New product '${productName}' has been created`,
+            message: `New product '${payload.productName}' has been created`,
          });
       } else {
          return res.status(400).json({
@@ -266,6 +256,14 @@ const getProductBySkillId = asyncHandler(async (req, res) => {
 
 const getProductPaginate = asyncHandler(async (req, res) => {
    try {
+      const errValidate = validationResult(req);
+      if (!errValidate.isEmpty()) {
+         return res.json({
+            errors: formatErrValidate(errValidate.array()),
+            bizResult: '8',
+         });
+      }
+
       // get params from request's body
       const { perPage, page, ageId, branchId, skillId, productName } = req.body;
       // format searchObject
