@@ -6,7 +6,10 @@ const validations = require('../validations/productValidation');
 router
    .route('/')
    .get(productsController.getAllProduct)
-   .post(productsController.insertNewProduct)
+   .post(
+      validations.insertProductValidations,
+      productsController.insertNewProduct
+   )
    .patch(productsController.updateProduct)
    .delete(productsController.deleteProduct);
 
