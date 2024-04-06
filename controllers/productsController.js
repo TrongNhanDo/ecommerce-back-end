@@ -7,7 +7,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
       const products = await Product.find()
          .populate(['age', 'branch', 'skill'])
          .sort({ createdAt: 1 })
-         .lean();
+         .exec();
       if (!products || !products.length) {
          return res.json({ message: 'No product found' });
       }
@@ -212,6 +212,7 @@ const getProductByAgeId = asyncHandler(async (req, res) => {
          return res.status(404).json({ message: 'Age ID is required' });
       }
       const product = await Product.find({ ageId })
+         .sort({ createdAt: 1 })
          .populate(['age', 'branch', 'skill'])
          .exec();
       if (!product || !product.length) {
@@ -231,6 +232,7 @@ const getProductByBranchId = asyncHandler(async (req, res) => {
          return res.status(404).json({ message: 'Branch ID is required' });
       }
       const product = await Product.find({ branchId })
+         .sort({ createdAt: 1 })
          .populate(['age', 'branch', 'skill'])
          .exec();
       if (!product || !product.length) {
@@ -250,6 +252,7 @@ const getProductBySkillId = asyncHandler(async (req, res) => {
          return res.status(404).json({ message: 'Skill ID is required' });
       }
       const product = await Product.find({ skillId })
+         .sort({ createdAt: 1 })
          .populate(['age', 'branch', 'skill'])
          .exec();
       if (!product || !product.length) {
