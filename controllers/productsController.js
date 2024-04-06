@@ -17,6 +17,23 @@ const getAllProduct = asyncHandler(async (req, res) => {
    }
 });
 
+const getNewestProduct = asyncHandler(async (req, res) => {
+   try {
+      const products = await Product.find()
+         .populate(['age', 'branch', 'skill'])
+         .sort({ createdAt: 1 })
+         .limit(4)
+         .exec();
+
+      if (!products || !products.length) {
+         return res.json({ message: 'No product found' });
+      }
+      return res.json(products);
+   } catch (error) {
+      return res.status(400).json({ error, message: "Server's error" });
+   }
+});
+
 // insert product
 const insertNewProduct = asyncHandler(async (req, res) => {
    try {
@@ -340,6 +357,7 @@ const insertManyDocuments = asyncHandler(async (req, res) => {
 
 module.exports = {
    getAllProduct,
+   getNewestProduct,
    insertNewProduct,
    updateProduct,
    deleteProduct,
